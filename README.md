@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Parcheggio
 
 A new Flutter project.
@@ -14,3 +15,7 @@ A few resources to get you started if this is your first Flutter project:
 For help getting started with Flutter, view our
 [online documentation](https://flutter.dev/docs), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
+=======
+# app
+Park+'s mobile application
+>>>>>>> ee4d002195ec4f3c1b6dc415e9c47b5a660c26a4
