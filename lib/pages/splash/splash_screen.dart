@@ -17,7 +17,7 @@ class _SplashScreenState extends State<SplashScreen> {
         context,
         MaterialPageRoute(
           builder: (context){
-            return login_register();
+            return LoginRegister();
           }
         ),
         (route) => false,

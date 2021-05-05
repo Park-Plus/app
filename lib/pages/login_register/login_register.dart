@@ -1,5 +1,10 @@
+import 'package:ParkPlus/pages/home/home.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:flutter_form_builder/localization/form_builder_localizations.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 TValue case2<TOptionType, TValue>(
   TOptionType selectedOption,
@@ -13,215 +18,246 @@ TValue case2<TOptionType, TValue>(
   return branches[selectedOption];
 }
 
-class login_register extends StatefulWidget {
-  login_register({Key key}) : super(key: key);
+class LoginRegister extends StatefulWidget {
+  LoginRegister({Key key}) : super(key: key);
 
   @override
-  _login_registerState createState() => _login_registerState();
+  _LoginRegisterState createState() => _LoginRegisterState();
 }
 
-class _login_registerState extends State<login_register> {
+class _LoginRegisterState extends State<LoginRegister> {
+
   int pagina = 0;
+  int prevState = 0;
+
+  bool mailErrata = false;
+  bool isPasswordVisible = false;
+
+  Future<bool> _interceptBackKey() {
+    setState(() {
+          pagina = prevState;
+    });
+  }
+
+  final formKey = GlobalKey<FormBuilderState>();
+  final formKey2 = GlobalKey<FormBuilderState>();
+
+  @override
+  void initState(){
+    super.initState();
+    autoLogin();
+  }
+
+  void autoLogin() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    if(prefs.getInt('logged_in') == 1){
+      Navigator.pushAndRemoveUntil(
+          context, 
+          MaterialPageRoute(
+            builder: (context) => Home()
+          ), 
+        ModalRoute.withName("/Home")
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Color(0xffF8F8F8),
-      body: SingleChildScrollView(
-        child: Column(
-        children: <Widget>[
-          Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [Colors.green[400], Colors.green[800]]
-              ),
-              borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(40.0),
-                bottomRight: Radius.circular(40.0)
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.green.withOpacity(0.5),
-                  spreadRadius: 1,
-                  blurRadius: 10,
-                  offset: Offset(10, 3),
+    return WillPopScope(
+      onWillPop: _interceptBackKey,
+      child: Scaffold(
+        backgroundColor: Color(0xffF8F8F8),
+        body: SingleChildScrollView(
+          child: Column(
+            children: <Widget>[
+              Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [Colors.green[400], Colors.green[800]]
+                  ),
+                  borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(40.0),
+                    bottomRight: Radius.circular(40.0)
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.green.withOpacity(0.5),
+                      spreadRadius: 1,
+                      blurRadius: 10,
+                      offset: Offset(10, 3),
+                    ),
+                  ],
                 ),
+                height: 300.0,
+                width: double.infinity,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Padding(
+                      child: Image(
+                        image: AssetImage('assets/images/logo.png'),
+                        width: 50,
+                        height: 50
+                      ),
+                      padding: EdgeInsets.only(
+                        bottom: 20
+                      ),
+                    ),
+                    Center(
+                      child: RichText(
+                        textAlign: TextAlign.center,
+                        text: TextSpan(
+                          children: [
+                            TextSpan(text: "Benvenuto in "),
+                            TextSpan(text: "Park+", style: TextStyle(fontWeight: FontWeight.bold)),
+                            TextSpan(text: '\n'),
+                            TextSpan(text: 'Un nuovo modo per parcheggiare.', style: TextStyle(fontSize: 17)),
+                          ], 
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 32,
+                            fontWeight: FontWeight.w500,
+                          )
+                        )
+                      )
+                    ),
+                  ]
+                ),
+              ),
+              AnimatedSwitcher(
+                duration: Duration(milliseconds: 300),
+                child: case2(pagina,
+                {
+                  0: loginRegisterButtons(context),
+                  1: loginFields(context),
+                  2: registerFields(context),
+                }, loginRegisterButtons(context)),
+                transitionBuilder: (widget, animation) => FadeTransition(
+                  opacity: animation,
+                  child: widget,
+                )
+              ),
+            ],
+          )
+        ),
+        bottomNavigationBar: BottomAppBar(
+          color: Colors.transparent,
+          child: Container(
+            height: pagina == 0 ? MediaQuery.of(context).size.height * 0.20 : MediaQuery.of(context).size.height * 0.07,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                (pagina == 1 || pagina == 2 ) ? InkWell(
+                  enableFeedback: false,
+                  onTap: (){
+                    setState(() {
+                      prevState = 0;
+                      if(pagina == 2) pagina = 1; else if(pagina == 1) pagina = 2;
+                    });
+                  },
+                  child: 
+                    RichText(
+                        textAlign: TextAlign.center,
+                        text: TextSpan(
+                          children: [
+                            if(pagina == 1) TextSpan(text: "Non hai ancora un account? ") else if(pagina == 2) TextSpan(text: "Hai già un account? ") ,
+                            if(pagina == 1) TextSpan(text: "Registrati ora", style: TextStyle(fontWeight: FontWeight.bold)) else if(pagina == 2) TextSpan(text: "Accedi", style: TextStyle(fontWeight: FontWeight.bold))
+                          ], 
+                          style: TextStyle(
+                            color: Colors.grey[700],
+                            fontSize: 15,
+                          )
+                        )
+                      )
+                ) : Container(
+                  width: MediaQuery.of(context).size.width * 0.90,
+                  child: Row(
+                    children: [
+                      Flexible(child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [Icon(Icons.check, color: Colors.green[800]), Padding(
+                        padding: const EdgeInsets.only(top: 8.0),
+                        child: Text("Prenota un posto", textAlign: TextAlign.center, style: TextStyle(color: Colors.grey[850])),
+                      )],)),
+                      Flexible(child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [Icon(Icons.attach_money, color: Colors.green[800]), Padding(
+                        padding: const EdgeInsets.only(top: 8.0),
+                        child: Text("Paga facilmente", textAlign: TextAlign.center, style: TextStyle(color: Colors.grey[850])),
+                      )],)),
+                      Flexible(child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [Icon(Icons.bolt, color: Colors.green[800]), Padding(
+                        padding: const EdgeInsets.only(top: 8.0),
+                        child: Text("Tutto a colpo d'occhio", textAlign: TextAlign.center, style: TextStyle(color: Colors.grey[850])),
+                      )],)),
+                      Flexible(child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [Icon(Icons.delete, color: Colors.green[800]), Padding(
+                        padding: const EdgeInsets.only(top: 8.0),
+                        child: Text("Mai più biglietti", textAlign: TextAlign.center, style: TextStyle(color: Colors.grey[850])),
+                      )],)),
+                    ]
+                  ),
+                )
               ],
             ),
-            height: 300.0,
-            width: double.infinity,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Padding(
-                  child: Image(
-                    image: AssetImage('assets/images/logo.png'),
-                    width: 50,
-                    height: 50
-                  ),
-                  padding: EdgeInsets.only(
-                    bottom: 20
-                  ),
-                ),
-                Center(
-                  child: RichText(
-                    textAlign: TextAlign.center,
-                    text: TextSpan(
-                      children: [
-                        TextSpan(text: "Benvenuto in "),
-                        TextSpan(text: "Park+", style: TextStyle(fontWeight: FontWeight.bold)),
-                        TextSpan(text: '\n'),
-                        TextSpan(text: 'Un nuovo modo per parcheggiare.', style: TextStyle(fontSize: 17)),
-                      ], 
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 32,
-                        fontWeight: FontWeight.w500,
-                      )
-                    )
-                  )
-                ),
-              ]
-            ),
           ),
-          AnimatedSwitcher(
-            duration: Duration(milliseconds: 300),
-            child: case2(pagina,
-            {
-              0: login_register_buttons(context),
-              1: login_fields(context),
-              2: register_fields(context),
-            }, login_register_buttons(context)),
-            transitionBuilder: (widget, animation) => FadeTransition(
-              opacity: animation,
-              child: widget,
-            )
-          )
-        ],
-      )
+          elevation: 0,
+        ),
+      ),
+    );
+  }
+
+  Container loginRegisterButtons(BuildContext context) {
+    return Container(
+      key: Key('login_register_buttons'),
+      child: Padding(
+        padding: EdgeInsets.only(
+          top: 50.0,
+          bottom: 50.0
+        ),
+        child: Column(
+          children: [
+            Container(
+              width: MediaQuery.of(context).size.width * 0.8,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(30),
+                child: MaterialButton(
+                  enableFeedback: false,
+                  padding: EdgeInsets.symmetric(vertical: 20, horizontal: 40),
+                  color: Colors.green[700],
+                  onPressed: (){
+                    setState((){
+                      prevState = 0;
+                      pagina = 1;
+                    });
+                  },
+                  child: Text("ACCEDI", style: TextStyle(color: Colors.white))
+                )
+              )
+            ),
+            Container(
+              margin: EdgeInsets.symmetric(vertical: 20),
+              width: MediaQuery.of(context).size.width * 0.8,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(30),
+                child: MaterialButton(
+                  enableFeedback: false,
+                  padding: EdgeInsets.symmetric(vertical: 20, horizontal: 40),
+                  color: Colors.grey[300],
+                  onPressed: (){
+                    setState(() {
+                      prevState = 0;
+                      pagina = 2;                       
+                    });
+                  },
+                  child: Text("REGISTRATI", style: TextStyle(color: Colors.black))
+                )
+              )
+            ),
+          ],
+        )
       )
     );
   }
 
-  Container login_register_buttons(BuildContext context) {
-    return Container(
-          key: Key('login_register_buttons'),
-          child: Padding(
-          padding: EdgeInsets.only(
-            top: 50.0,
-            bottom: 50.0
-          ),
-          child: Column(
-            children: [
-              Container(
-                width: MediaQuery.of(context)?.size.width * 0.8,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(30),
-                  child: MaterialButton(
-                    enableFeedback: false,
-                    padding: EdgeInsets.symmetric(vertical: 20, horizontal: 40),
-                    color: Colors.green[700],
-                    onPressed: (){
-                      setState((){
-                        pagina = 1;  
-                      });
-                    },
-                    child: Text("ACCEDI", style: TextStyle(color: Colors.white))
-                  )
-                )
-              ),
-              Container(
-                margin: EdgeInsets.symmetric(vertical: 20),
-                width: MediaQuery.of(context)?.size.width * 0.8,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(30),
-                  child: MaterialButton(
-                    enableFeedback: false,
-                    padding: EdgeInsets.symmetric(vertical: 20, horizontal: 40),
-                    color: Colors.grey[300],
-                    onPressed: (){
-                      setState(() {
-                        pagina = 2;                       
-                      });
-                    },
-                    child: Text("REGISTRATI", style: TextStyle(color: Colors.black))
-                  )
-                )
-              ),
-              Padding(
-                child: Divider(
-                  height: 30,
-                  thickness: 2,
-                ),
-                padding: EdgeInsets.symmetric(horizontal: 150)
-              ),
-              Padding(
-                padding: EdgeInsets.only(
-                  top: 10
-                ),
-                child: Center(
-                  child: RichText(
-                    textAlign: TextAlign.center,
-                    text: TextSpan(
-                      children: [
-                        TextSpan(text: "Oppure, effettua il login con"),
-                      ], 
-                      style: TextStyle(
-                        color: Colors.grey[700],
-                        fontSize: 15,
-                      )
-                    )
-                  )
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.only(
-                  top: 20
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center, //Center Row contents vertically,
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 7),
-                      child: ClipOval(
-                        child: Material(
-                          color: Colors.grey,
-                          child: InkWell(
-                            enableFeedback: false,
-                            splashColor: Colors.green[800],
-                            child: SizedBox(width: 50, height: 50, child: Icon(FontAwesomeIcons.google, color: Colors.white)),
-                            onTap: (){}
-                          )
-                        )
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 7),
-                      child: ClipOval(
-                      child: Material(
-                        color: Colors.grey,
-                        child: InkWell(
-                          enableFeedback: false,
-                          splashColor: Colors.green[800],
-                          child: SizedBox(width: 50, height: 50, child: Icon(FontAwesomeIcons.github, color: Colors.white)),
-                          onTap: (){}
-                        )
-                      )
-                    )
-                    )
-                  ]
-                )
-              )
-            ],
-          )
-        )
-      );
-  }
-
-  Container login_fields(BuildContext context) {
+  Container loginFields(BuildContext context) {
     return Container(
       key: Key('login_fields'),          
       child: Padding(
@@ -230,264 +266,316 @@ class _login_registerState extends State<login_register> {
         ),
         child: SingleChildScrollView(
           child: Column(
-          children: [
-            Padding(
-              padding: EdgeInsets.only(bottom: 20),
-              child: Text("Effettua l'accesso", style: TextStyle(fontSize: 25, fontWeight: FontWeight.w500, color: Colors.green[900])),
-            ),
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-              width: MediaQuery.of(context).size.width * 0.8,
-              height: 50,
-              decoration: BoxDecoration(
-                color: Colors.green[200],
-                borderRadius: BorderRadius.circular(30)
+            children: [
+              Padding(
+                padding: EdgeInsets.only(bottom: 20),
+                child: Text("Effettua l'accesso", style: TextStyle(fontSize: 25, fontWeight: FontWeight.w500, color: Colors.green[900])),
               ),
-              child: TextField(
-                decoration: InputDecoration(
-                  border: InputBorder.none,
-                  hintText: "Mail",
-                  icon: Icon(Icons.mail, color: Colors.green[800]),
-                ),
-              )
-            ),
-            Padding(
-              padding: EdgeInsets.only(top: 20.0),
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+              Container(
                 width: MediaQuery.of(context).size.width * 0.8,
-                height: 50,
-                decoration: BoxDecoration(
-                  color: Colors.green[200],
-                  borderRadius: BorderRadius.circular(30)
-                ),
-                child: TextField(
-                  obscureText: true,
-                  decoration: InputDecoration(
-                    border: InputBorder.none,
-                    hintText: "Password",
-                    icon: Icon(Icons.lock, color: Colors.green[800]),
-                    suffixIcon: Icon(Icons.visibility, color: Colors.green[800])
-                  ),
-                )
-              ),
-            ),
-            Container(
-                margin: EdgeInsets.only(top: 20, bottom: 35),
-                width: MediaQuery.of(context)?.size.width * 0.8,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(30),
-                  child: MaterialButton(
-                    enableFeedback: false,
-                    padding: EdgeInsets.symmetric(vertical: 20, horizontal: 40),
-                    color: Colors.green[800],
-                    onPressed: (){},
-                    child: Text("ACCEDI", style: TextStyle(color: Colors.white))
-                  )
-                )
-              ),
-            InkWell(
-              enableFeedback: false,
-              onTap: (){
-                setState(() {
-                  pagina = 2;                       
-                });
-              },
-              child: RichText(
-                    textAlign: TextAlign.center,
-                    text: TextSpan(
-                      children: [
-                        TextSpan(text: "Non hai ancora un account? "),
-                        TextSpan(text: "Registrati ora", style: TextStyle(fontWeight: FontWeight.bold))
-                      ], 
-                      style: TextStyle(
-                        color: Colors.grey[700],
-                        fontSize: 15,
+                child: FormBuilder(
+                  key: formKey,
+                  child: Column(
+                    children: [
+                      Container(
+                        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                        decoration: BoxDecoration(
+                          color: mailErrata ? Colors.red[100] : Colors.green[100],
+                          borderRadius: BorderRadius.circular(30)
+                        ),
+                        child: Stack(
+                          alignment: Alignment.centerRight,
+                          children: [
+                            FormBuilderTextField(
+                              name: 'email',
+                              onChanged: (val) {
+                                setState(() {
+                                  mailErrata = !formKey.currentState.fields["email"].validate();
+                                });
+                              },
+                              decoration: InputDecoration(
+                                border: InputBorder.none,
+                                icon: Icon(Icons.mail, color: mailErrata ? Colors.red[800] : Colors.green[800]),
+                              ),
+                              validator: FormBuilderValidators.email(context, errorText: '')
+                            ),
+                          ]
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 20.0),
+                        child: Container(
+                          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                          decoration: BoxDecoration(
+                            color: Colors.green[100],
+                            borderRadius: BorderRadius.circular(30)
+                          ),
+                          child: Stack(
+                            alignment: Alignment.centerRight,
+                            children: [
+                              FormBuilderTextField(
+                                name: 'password',
+                                decoration: InputDecoration(
+                                  border: InputBorder.none,
+                                  contentPadding: EdgeInsets.fromLTRB(6, 6, 48, 6),
+                                  icon: Icon(Icons.lock, color: Colors.green[800])
+                                ),
+                                obscureText: !isPasswordVisible,
+                              ),
+                              IconButton(
+                                enableFeedback: false,
+                                icon: Icon(isPasswordVisible ? Icons.visibility_off : Icons.visibility, color: Colors.green[800]),
+                                onPressed: () {
+                                  setState(() {
+                                    isPasswordVisible = !isPasswordVisible;
+                                  });
+                                },
+                              ),
+                            ]
+                          ),
+                      ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 20.0, bottom: 35),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(30),
+                          child: MaterialButton(
+                            enableFeedback: false,
+                            minWidth: MediaQuery.of(context).size.width,
+                            height: 60,
+                            color: Colors.green[800],
+                            onPressed: () async {
+                              SharedPreferences prefs = await SharedPreferences.getInstance();
+                              await prefs.setInt('logged_in', 1);
+                              Navigator.pushAndRemoveUntil(
+                                context, 
+                                MaterialPageRoute(
+                                  builder: (context) => Home()
+                                ), 
+                              ModalRoute.withName("/Home")
+                              );
+                            },
+                            child: Text("ACCEDI", style: TextStyle(color: Colors.white))
+                          ),
+                        ),
                       )
-                    )
-                  )
-            )
-          ],
-        )
+                    ],
+                  ),
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                ),
+              ),
+            ],
+          )
         )
       )
     );
   }
 
-  Container register_fields(BuildContext context) {
+  Container registerFields(BuildContext context) {
     return Container(
       key: Key('register_fields'),          
-      child: Padding(
-        padding: EdgeInsets.symmetric(
-          vertical: 40
-        ),
-        child: SingleChildScrollView(
-          child: Column(
-          children: [
-            Padding(
-              padding: EdgeInsets.only(bottom: 20),
-              child: Text("Registrati", style: TextStyle(fontSize: 25, fontWeight: FontWeight.w500, color: Colors.green[900])),
-            ),
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-              width: MediaQuery.of(context).size.width * 0.8,
-              height: 50,
-              decoration: BoxDecoration(
-                color: Colors.green[200],
-                borderRadius: BorderRadius.circular(30)
-              ),
-              child: TextField(
-                decoration: InputDecoration(
-                  border: InputBorder.none,
-                  hintText: "Mail",
-                  icon: Icon(Icons.mail, color: Colors.green[800]),
+        child: Padding(
+          padding: const EdgeInsets.only(top: 40.0),
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                Padding(
+                  padding: EdgeInsets.only(bottom: 20),
+                  child: Text("Registrati", style: TextStyle(fontSize: 25, fontWeight: FontWeight.w500, color: Colors.green[900])),
                 ),
-              )
-            ),
-            Padding(
-              padding: EdgeInsets.only(top: 20.0),
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-                width: MediaQuery.of(context).size.width * 0.8,
-                height: 50,
-                decoration: BoxDecoration(
-                  color: Colors.green[200],
-                  borderRadius: BorderRadius.circular(30)
-                ),
-                child: TextField(
-                  obscureText: true,
-                  decoration: InputDecoration(
-                    border: InputBorder.none,
-                    hintText: "Password",
-                    icon: Icon(Icons.lock, color: Colors.green[800]),
-                    suffixIcon: Icon(Icons.visibility, color: Colors.green[800])
+                Container(
+                  width: MediaQuery.of(context).size.width * 0.8,
+                  child: FormBuilder(
+                    key: formKey2,
+                    child: Column(
+                      children: [
+                        Container(
+                          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                          decoration: BoxDecoration(
+                            color: mailErrata ? Colors.red[100] : Colors.green[100],
+                            borderRadius: BorderRadius.circular(30)
+                          ),
+                          child: Stack(
+                            alignment: Alignment.centerRight,
+                            children: [
+                              FormBuilderTextField(
+                                name: 'name',
+                                decoration: InputDecoration(
+                                  border: InputBorder.none,
+                                  hintText: "Nome",
+                                  icon: Icon(Icons.person, color: Colors.green[800]),
+                                ),
+                              ),
+                            ]
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 20.0),
+                          child: Container(
+                            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                            decoration: BoxDecoration(
+                              color: Colors.green[100],
+                              borderRadius: BorderRadius.circular(30)
+                            ),
+                            child: Stack(
+                              alignment: Alignment.centerRight,
+                              children: [
+                                FormBuilderTextField(
+                                  name: 'surname',
+                                  decoration: InputDecoration(
+                                    border: InputBorder.none,
+                                    hintText: "Cognome",
+                                    icon: Icon(Icons.person, color: Colors.green[800]),
+                                  ),
+                                ),
+                              ]
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 20.0),
+                          child: Container(
+                            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                            decoration: BoxDecoration(
+                              color: Colors.green[100],
+                              borderRadius: BorderRadius.circular(30)
+                            ),
+                            child: Stack(
+                              alignment: Alignment.centerRight,
+                              children: [
+                                FormBuilderTextField(
+                                  name: 'email',
+                                  decoration: InputDecoration(
+                                    border: InputBorder.none,
+                                    hintText: "Indirizzo mail",
+                                    icon: Icon(Icons.mail, color: Colors.green[800]),
+                                  ),
+                                ),
+                              ]
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 20.0),
+                          child: Container(
+                            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                            decoration: BoxDecoration(
+                              color: Colors.green[100],
+                              borderRadius: BorderRadius.circular(30)
+                            ),
+                            child: Stack(
+                              alignment: Alignment.centerRight,
+                              children: [
+                                FormBuilderTextField(
+                                  name: 'taxCode',
+                                  decoration: InputDecoration(
+                                    border: InputBorder.none,
+                                    hintText: "Codice fiscale",
+                                    icon: Icon(Icons.tag, color: Colors.green[800]),
+                                  ),
+                                ),
+                              ]
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 20.0),
+                          child: Container(
+                            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                            decoration: BoxDecoration(
+                              color: Colors.green[100],
+                              borderRadius: BorderRadius.circular(30)
+                            ),
+                            child: Stack(
+                              alignment: Alignment.centerRight,
+                              children: [
+                                FormBuilderTextField(
+                                  name: 'password1',
+                                  decoration: InputDecoration(
+                                    border: InputBorder.none,
+                                    hintText: "Password",
+                                    icon: Icon(Icons.lock, color: Colors.green[800]),
+                                  ),
+                                ),
+                              ]
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 20.0),
+                          child: Container(
+                            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                            decoration: BoxDecoration(
+                              color: Colors.green[100],
+                              borderRadius: BorderRadius.circular(30)
+                            ),
+                            child: Stack(
+                              alignment: Alignment.centerRight,
+                              children: [
+                                FormBuilderTextField(
+                                  name: 'passwordConfirmation',
+                                  decoration: InputDecoration(
+                                    border: InputBorder.none,
+                                    hintText: "Conferma password",
+                                    icon: Icon(Icons.lock, color: Colors.green[800]),
+                                  ),
+                                ),
+                              ]
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 20.0),
+                          child: FormBuilderCheckbox(
+                            tristate: false,
+                            name: 'accept_terms',
+                            initialValue: false,
+                            activeColor: Colors.green[800],
+                            title: RichText(
+                              text: TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text: 'Ho letto ed accetto i ',
+                                    style: TextStyle(color: Colors.black),
+                                  ),
+                                  TextSpan(
+                                    text: 'termini e condizioni',
+                                    style: TextStyle(color: Colors.green[800]),
+                                    recognizer: TapGestureRecognizer()..onTap = (){ print("Merda"); },
+                                  ),
+                                ],
+                              ),
+                            ),
+                            validator: FormBuilderValidators.equal(
+                              context,
+                              true,
+                              errorText: 'Devi accettare i termini e condizioni per poter continuare.',
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 20.0, bottom: 35),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(30),
+                            child: MaterialButton(
+                              enableFeedback: false,
+                              minWidth: MediaQuery.of(context).size.width,
+                              height: 60,
+                              color: Colors.green[800],
+                              onPressed: (){},
+                              child: Text("REGISTRATI", style: TextStyle(color: Colors.white))
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
                   ),
-                )
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.only(top: 20.0),
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-                width: MediaQuery.of(context).size.width * 0.8,
-                height: 50,
-                decoration: BoxDecoration(
-                  color: Colors.green[200],
-                  borderRadius: BorderRadius.circular(30)
                 ),
-                child: TextField(
-                  obscureText: true,
-                  decoration: InputDecoration(
-                    border: InputBorder.none,
-                    hintText: "Password",
-                    icon: Icon(Icons.lock, color: Colors.green[800]),
-                    suffixIcon: Icon(Icons.visibility, color: Colors.green[800])
-                  ),
-                )
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.only(top: 20.0),
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-                width: MediaQuery.of(context).size.width * 0.8,
-                height: 50,
-                decoration: BoxDecoration(
-                  color: Colors.green[200],
-                  borderRadius: BorderRadius.circular(30)
-                ),
-                child: TextField(
-                  obscureText: true,
-                  decoration: InputDecoration(
-                    border: InputBorder.none,
-                    hintText: "Password",
-                    icon: Icon(Icons.lock, color: Colors.green[800]),
-                    suffixIcon: Icon(Icons.visibility, color: Colors.green[800])
-                  ),
-                )
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.only(top: 20.0),
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-                width: MediaQuery.of(context).size.width * 0.8,
-                height: 50,
-                decoration: BoxDecoration(
-                  color: Colors.green[200],
-                  borderRadius: BorderRadius.circular(30)
-                ),
-                child: TextField(
-                  obscureText: true,
-                  decoration: InputDecoration(
-                    border: InputBorder.none,
-                    hintText: "Password",
-                    icon: Icon(Icons.lock, color: Colors.green[800]),
-                    suffixIcon: Icon(Icons.visibility, color: Colors.green[800])
-                  ),
-                )
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.only(top: 20.0),
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-                width: MediaQuery.of(context).size.width * 0.8,
-                height: 50,
-                decoration: BoxDecoration(
-                  color: Colors.green[200],
-                  borderRadius: BorderRadius.circular(30)
-                ),
-                child: TextField(
-                  obscureText: true,
-                  decoration: InputDecoration(
-                    border: InputBorder.none,
-                    hintText: "Password",
-                    icon: Icon(Icons.lock, color: Colors.green[800]),
-                    suffixIcon: Icon(Icons.visibility, color: Colors.green[800])
-                  ),
-                )
-              ),
-            ),
-            Container(
-                margin: EdgeInsets.only(top: 20, bottom: 35),
-                width: MediaQuery.of(context)?.size.width * 0.8,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(30),
-                  child: MaterialButton(
-                    enableFeedback: false,
-                    padding: EdgeInsets.symmetric(vertical: 20, horizontal: 40),
-                    color: Colors.green[800],
-                    onPressed: (){},
-                    child: Text("ACCEDI", style: TextStyle(color: Colors.white))
-                  )
-                )
-              ),
-            InkWell(
-              enableFeedback: false,
-              onTap: (){
-                setState(() {
-                  pagina = 1;                       
-                });
-              },
-              child: RichText(
-                textAlign: TextAlign.center,
-                text: TextSpan(
-                  children: [
-                    TextSpan(text: "Hai già un account? "),
-                    TextSpan(text: "Accedi", style: TextStyle(fontWeight: FontWeight.bold))
-                  ], 
-                  style: TextStyle(
-                    color: Colors.grey[700],
-                    fontSize: 15,
-                  )
-                )
-              )
+              ],
             )
-          ],
-        )
-        )
-      )
+          ),
+        )    
     );
   }
 }
