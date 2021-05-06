@@ -1,6 +1,8 @@
+import 'package:ParkPlus/pages/home/home.dart';
 import 'package:flutter/material.dart';
 import 'package:ParkPlus/pages/login_register/login_register.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SplashScreen extends StatefulWidget {
   @override
@@ -9,20 +11,42 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {  
 
+  Future<bool> autoLogin() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    if(prefs.getInt('logged_in') == 1){
+      Navigator.pushAndRemoveUntil(
+          context, 
+          MaterialPageRoute(
+            builder: (context) => Home()
+          ), 
+        ModalRoute.withName("/Home")
+      );
+      return Future.value(true);
+    }
+    return Future.value(false);
+  }
+
+  void _loginAndShowSplash() async {
+    bool _loggedIn = await autoLogin();
+    if(!_loggedIn){
+      var d = Duration(seconds: 2);
+      Future.delayed(d, () {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+            builder: (context){
+              return LoginRegister();
+            }
+          ),
+          (route) => false,
+        );
+      });
+    }
+  }
+
   @override
   void initState() {
-    var d = Duration(seconds: 2);
-    Future.delayed(d, () {
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(
-          builder: (context){
-            return LoginRegister();
-          }
-        ),
-        (route) => false,
-      );
-    });
+    _loginAndShowSplash();
     super.initState();
   }
 

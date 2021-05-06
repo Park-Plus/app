@@ -88,7 +88,6 @@ class _VehiclesScreenState extends State<VehiclesScreen> {
                 height: MediaQuery.of(context).size.height * 0.62,
                 width: MediaQuery.of(context).size.width,
                 child: Container(
-                  //child: _pages.elementAt(_currentPage)
                   child: FutureBuilder(
                     future: _getVehicles(),
                     builder: (BuildContext context, AsyncSnapshot snapshot){

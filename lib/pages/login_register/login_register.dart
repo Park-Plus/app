@@ -45,20 +45,6 @@ class _LoginRegisterState extends State<LoginRegister> {
   @override
   void initState(){
     super.initState();
-    autoLogin();
-  }
-
-  void autoLogin() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    if(prefs.getInt('logged_in') == 1){
-      Navigator.pushAndRemoveUntil(
-          context, 
-          MaterialPageRoute(
-            builder: (context) => Home()
-          ), 
-        ModalRoute.withName("/Home")
-      );
-    }
   }
 
   @override

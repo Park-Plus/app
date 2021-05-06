@@ -25,34 +25,33 @@ class _HomeState extends State<Home> {
   */
 
   Size size;
+  double statusBarHeight;
+
+  static List<Widget> _pages = <Widget>[];
 
   @override
   void initState() {
     super.initState();
+    _pages.add(HomeScreen(statusBarHeight: statusBarHeight));
+    _pages.add(bookingsScreen());
+    _pages.add(VehiclesScreen());
+    _pages.add(profileScreen());
   }
-
 
   List<String> items = List<String>.generate(10000, (i) => "Nome auto $i");
   ScrollController _scrollController = new ScrollController(); // set controller on scrolling
   bool _show = false;
 
-  static List<Widget> _pages = <Widget>[
-    homeScreen(),
-    bookingsScreen(),
-    VehiclesScreen(),
-    profileScreen()
-  ];
-
-
-  Widget content = VehiclesScreen();
+  Widget content = HomeScreen();
 
   @override
   Widget build(BuildContext context) {
+    double _currSBHeight = MediaQuery.of(context).padding.top;
     size = MediaQuery.of(context).size;
     return Scaffold(
-      appBar: AppBar(
+      appBar: (_currentPage != 0) ? AppBar(
         backgroundColor: Colors.green[800],
-      ),
+      ) : null,
       backgroundColor: Color(0xffF8F8F8),
       body: content, 
       bottomNavigationBar: BottomNavigationBar(
