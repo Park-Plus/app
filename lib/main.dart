@@ -13,7 +13,8 @@ class ParkPlus extends StatelessWidget {
       title: 'ParkPlus',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        scaffoldBackgroundColor: Colors.white,
+        accentColor: Colors.green[800],
+        scaffoldBackgroundColor: Color(0xffF8F8F8),
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       home: SplashScreen(),
