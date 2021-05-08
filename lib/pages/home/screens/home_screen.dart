@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -21,24 +20,8 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _show = false;
   int _current = 0;
 
-  void handleScroll() async {
-    _scrollController.addListener(() {
-      if (_scrollController.position.userScrollDirection ==
-          ScrollDirection.reverse) {
-          setState(() {
-            _show = true;
-          });
-      }
-      if (_scrollController.position.userScrollDirection ==
-          ScrollDirection.forward) {
-      }
-    });
-  }
-
   _setStatusBarHeight() {
-    setState(() {
-      statusBarHeight = widget.statusBarHeight;
-    });
+    statusBarHeight = widget.statusBarHeight;
   }
 
   Future<void> _getVehicles(){
@@ -48,7 +31,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   List<String> items = List<String>.generate(10000, (i) => "Nome auto $i");
 
-  int _itemsCount = 0;
+  int _itemsCount = 5;
 
   @override
   void initState() {
@@ -61,13 +44,15 @@ class _HomeScreenState extends State<HomeScreen> {
      _scrollController.removeListener(() {});
      super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
+    print(widget.statusBarHeight);
     return Container(
         child: Column(
           children: [
             Container(
-              height: 60,
+              height: widget.statusBarHeight,
               color: Colors.green[800]
             ),
             Container(
@@ -142,7 +127,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   return Container(
                     width: 8.0,
                     height: 8.0,
-                    margin: EdgeInsets.symmetric(vertical: 25.0, horizontal: 2.0),
+                    margin: EdgeInsets.symmetric(vertical: 20.0, horizontal: 2.0),
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       color: _current == index
@@ -162,7 +147,21 @@ class _HomeScreenState extends State<HomeScreen> {
             Container(
               height: MediaQuery.of(context).size.height * 0.07,
               width: MediaQuery.of(context).size.width * 0.90,
-              child: Align(alignment: Alignment.centerLeft, child: Text("Ultimi posteggi", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25))),
+              child: Row(
+                children: [
+                  Text("Ultimi posteggi", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25)),
+                  Spacer(),
+                  (_itemsCount != 0 ) ? TextButton.icon(
+                    onPressed: (){},
+                    label: Icon(Icons.double_arrow),
+                    icon: Text("Vedi tutti"),
+                    style: TextButton.styleFrom(
+                      primary: Colors.green[800],
+                      onSurface: Colors.grey,
+                    )
+                  ) : Text(""),
+                ]
+              ),
             ),
             Expanded(
               child: Container(
@@ -180,7 +179,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   builder: (BuildContext context, AsyncSnapshot snapshot){
                     return ListView.builder(
                       padding: EdgeInsets.all(0.0),
-                      itemCount: 1,
+                      itemCount: _itemsCount,
                       itemBuilder: (context, index){
                         return ListTile(
                           leading: CircleAvatar(child: Text((index + 1).toString()), backgroundColor: Colors.green[800],),
@@ -193,11 +192,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   }
                 )
               ),
-            ),
-            Container(
-              height: MediaQuery.of(context).size.height * 0.05,
-              width: MediaQuery.of(context).size.width * 0.90,
-              child: TextButton(child: Text("Vedi tutti..."), onPressed: (){}),
             ),
           ]
         )

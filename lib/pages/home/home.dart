@@ -1,8 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'screens/home_screen.dart';
 import 'screens/bookings_screen.dart';
 import 'screens/vehicles_screen.dart';
@@ -27,26 +25,21 @@ class _HomeState extends State<Home> {
   Size size;
   double statusBarHeight;
 
-  static List<Widget> _pages = <Widget>[];
-
   @override
   void initState() {
     super.initState();
-    _pages.add(HomeScreen(statusBarHeight: statusBarHeight));
-    _pages.add(bookingsScreen());
-    _pages.add(VehiclesScreen());
-    _pages.add(profileScreen());
   }
 
   List<String> items = List<String>.generate(10000, (i) => "Nome auto $i");
   ScrollController _scrollController = new ScrollController(); // set controller on scrolling
   bool _show = false;
 
-  Widget content = HomeScreen();
+  Widget content;
 
   @override
   Widget build(BuildContext context) {
-    double _currSBHeight = MediaQuery.of(context).padding.top;
+    statusBarHeight = MediaQuery.of(context).padding.top;
+    content = new HomeScreen(statusBarHeight: statusBarHeight);
     size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: (_currentPage != 0) ? AppBar(
@@ -66,7 +59,20 @@ class _HomeState extends State<Home> {
         ],
         onTap: (index){
           setState(() {
-            content = _pages[index];
+            switch(index){
+              case 0:
+                content = new HomeScreen(statusBarHeight: statusBarHeight);
+                break;
+              case 1:
+                content = new HomeScreen(statusBarHeight: statusBarHeight);
+                break;
+              case 2:
+                content = new HomeScreen(statusBarHeight: statusBarHeight);
+                break;
+              case 3:
+                content = new HomeScreen(statusBarHeight: statusBarHeight);
+                break;                
+            }
             _currentPage = index;
           });
         },

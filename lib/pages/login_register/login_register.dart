@@ -1,9 +1,7 @@
-import 'package:ParkPlus/pages/home/home.dart';
+import 'package:parkplus/pages/home/home.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:flutter_form_builder/localization/form_builder_localizations.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 TValue case2<TOptionType, TValue>(
