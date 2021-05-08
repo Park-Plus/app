@@ -14,20 +14,13 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
 
-  double statusBarHeight;
-
-  ScrollController _scrollController = new ScrollController(); // se
+  ScrollController _scrollController = new ScrollController();
   bool _show = false;
   int _current = 0;
-
-  _setStatusBarHeight() {
-    statusBarHeight = widget.statusBarHeight;
-  }
 
   Future<void> _getVehicles(){
     return Future.value();
   }
-
 
   List<String> items = List<String>.generate(10000, (i) => "Nome auto $i");
 
@@ -36,7 +29,6 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    _setStatusBarHeight();
   }
 
   @override
@@ -182,6 +174,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       itemCount: _itemsCount,
                       itemBuilder: (context, index){
                         return ListTile(
+                          tileColor: (index % 2 != 0) ? Colors.grey[200] : Theme.of(context).backgroundColor,
                           leading: CircleAvatar(child: Text((index + 1).toString()), backgroundColor: Colors.green[800],),
                           title: Text("Volvo demmerda il 04/01/2021"),
                           subtitle: Text("Pagati €15.20"),

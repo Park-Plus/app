@@ -16,6 +16,7 @@ class ParkPlus extends StatelessWidget {
         primaryColor: Colors.green[800],
         accentColor: Colors.green[800],
         scaffoldBackgroundColor: Color(0xffF8F8F8),
+        backgroundColor: Color(0xffF8F8F8),
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       home: SplashScreen(),

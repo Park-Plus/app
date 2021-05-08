@@ -39,7 +39,9 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     statusBarHeight = MediaQuery.of(context).padding.top;
-    content = new HomeScreen(statusBarHeight: statusBarHeight);
+    if(_currentPage == 0){
+      content = new HomeScreen(statusBarHeight: statusBarHeight);
+    }
     size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: (_currentPage != 0) ? AppBar(
@@ -64,13 +66,13 @@ class _HomeState extends State<Home> {
                 content = new HomeScreen(statusBarHeight: statusBarHeight);
                 break;
               case 1:
-                content = new HomeScreen(statusBarHeight: statusBarHeight);
+                content = bookingsScreen();
                 break;
               case 2:
-                content = new HomeScreen(statusBarHeight: statusBarHeight);
+                content = new VehiclesScreen();
                 break;
               case 3:
-                content = new HomeScreen(statusBarHeight: statusBarHeight);
+                content = new ProfileScreen();
                 break;                
             }
             _currentPage = index;
