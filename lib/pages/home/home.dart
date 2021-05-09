@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:parkplus/pages/home/screens/right_now_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/bookings_screen.dart';
 import 'screens/vehicles_screen.dart';
@@ -55,8 +56,8 @@ class _HomeState extends State<Home> {
         currentIndex: _currentPage,
         items: [
           BottomNavigationBarItem(label: "Home", icon: Icon(Icons.home)),
-          BottomNavigationBarItem(label: "Prenotazioni", icon: Icon(Icons.check)),
-          BottomNavigationBarItem(label: "Veicoli", icon: Icon(CupertinoIcons.car)),
+          BottomNavigationBarItem(label: "Stato attuale", icon: Icon(Icons.check)),
+          BottomNavigationBarItem(label: "Prenotazioni", icon: Icon(Icons.lock)),
           BottomNavigationBarItem(label: "Profilo", icon: Icon(Icons.person)),
         ],
         onTap: (index){
@@ -66,10 +67,10 @@ class _HomeState extends State<Home> {
                 content = new HomeScreen(statusBarHeight: statusBarHeight);
                 break;
               case 1:
-                content = bookingsScreen();
+                content = new RightNowScreen();
                 break;
               case 2:
-                content = new VehiclesScreen();
+                content = new BookingsScreen();
                 break;
               case 3:
                 content = new ProfileScreen();

@@ -2,9 +2,8 @@ import 'package:badges/badges.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:carousel_slider/carousel_slider.dart';
-import 'package:parkplus/pages/home/home.dart';
 import 'package:parkplus/pages/home/screens/vehicles_screen.dart';
+import 'package:settings_ui/settings_ui.dart';
 
 class ProfileScreen extends StatefulWidget {
   @override
@@ -39,7 +38,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 borderRadius: BorderRadius.circular(10)
               ),
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width * 0.04),
                 child: Row(
                   children: [
                     CircleAvatar(backgroundImage: AssetImage('assets/images/me.jpg'), radius: 35,),
@@ -54,6 +53,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           Padding(
                             padding: EdgeInsets.only(top: 8.0),
                             child: Badge(
+                              toAnimate: false,
                               shape: BadgeShape.square,
                               badgeColor: Colors.green[800],
                               badgeContent: Text('PREMIUM', style: TextStyle(color: Colors.white)),
@@ -69,43 +69,56 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           Expanded(
             child: Padding(
-              padding: EdgeInsets.only(top: 15.0),
-              child: ListView(
-                children: [
-                  ListTile(
-                    leading: CircleAvatar(child: Icon(Icons.star, color: Colors.grey[700]), backgroundColor: Colors.green[200],),
-                    title: Text('Passa a premium'),
-                    subtitle: Text('Nessun costo di prenotazione, priorità e molto altro!'),
+              padding: EdgeInsets.only(top: 8.0),
+              child: SettingsList(
+                backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+                sections: [
+                  SettingsSection(
+                    title: 'Premium',
+                    tiles: [
+                      SettingsTile(
+                        title: 'Passa a premium',
+                        leading: Icon(Icons.star),
+                        onPressed: (BuildContext context) {},
+                      ),
+                    ],
                   ),
-                  ListTile(
-                    title: Text('')
+                  SettingsSection(
+                    title: 'Le mie informazioni',
+                    tiles: [
+                      SettingsTile(
+                        title: 'I miei veicoli',
+                        leading: Icon(CupertinoIcons.car),
+                        onPressed: (BuildContext context) {
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => VehiclesScreen()));
+                        },
+                      ),
+                      SettingsTile(
+                        title: 'Metodi di pagamento',
+                        leading: Icon(Icons.credit_card),
+                        onPressed: (BuildContext context) {},
+                      ),
+                      SettingsTile(
+                        title: 'Fatture',
+                        leading: Icon(Icons.money),
+                        onPressed: (BuildContext context) {},
+                      ),
+                    ],
                   ),
-                  ListTile(
-                    leading: CircleAvatar(child: Icon(CupertinoIcons.car, color: Colors.grey[700]), backgroundColor: Colors.grey[300],),
-                    title: Text('I miei veicoli'),
-                    onTap: (){
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => VehiclesScreen()));
-                    },
-                  ),
-                  ListTile(
-                    leading: CircleAvatar(child: Icon(Icons.money, color: Colors.grey[700]), backgroundColor: Colors.grey[300],),
-                    title: Text('Fatture')
-                  ),
-                  ListTile(
-                    leading: CircleAvatar(child: Icon(Icons.credit_card, color: Colors.grey[700]), backgroundColor: Colors.grey[300],),
-                    title: Text('Metodi di pagamento')
-                  ),
-                  ListTile(
-                    title: Text('')
-                  ),
-                  ListTile(
-                    leading: CircleAvatar(child: Icon(Icons.logout, color: Colors.red), backgroundColor: Colors.red[200],),
-                    title: Text('Logout')
+                  SettingsSection(
+                    title: 'Sicurezza',
+                    tiles: [
+                      SettingsTile(
+                        title: 'Logout',
+                        leading: Icon(Icons.logout),
+                        onPressed: (BuildContext context) {},
+                      ),
+                    ],
                   ),
                 ],
               ),
-            ),
-          )
+            )
+          ),
         ],
       )
     );
