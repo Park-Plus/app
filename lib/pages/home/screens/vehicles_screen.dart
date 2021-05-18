@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:parkplus/functions.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:intl/intl.dart';
 
 class VehiclesScreen extends StatefulWidget {
   @override
@@ -11,6 +13,9 @@ class _VehiclesScreenState extends State<VehiclesScreen> {
 
   ScrollController _scrollController = new ScrollController(); // se
   bool _show = false;
+
+  List vehicles;
+  bool hasObtainedUserInfos;
 
   void handleScroll() async {
     _scrollController.addListener(() {
@@ -26,8 +31,16 @@ class _VehiclesScreenState extends State<VehiclesScreen> {
     });
   }
 
-  Future<void> _getVehicles(){
-    return Future.value();
+  Future<void> _getVehicles() async{
+    if(await handleLogin()){
+      dynamic resp = await getVehicles();
+      if(this.mounted){
+        setState(() {
+          vehicles = resp;
+          hasObtainedUserInfos = true; 
+        });
+      }
+    }
   }
 
   List<String> items = List<String>.generate(10000, (i) => "Nome auto $i");
@@ -95,7 +108,7 @@ class _VehiclesScreenState extends State<VehiclesScreen> {
                       builder: (BuildContext context, AsyncSnapshot snapshot){
                         return ListView.builder(
                           controller: _scrollController,
-                          itemCount: 10,
+                          itemCount: vehicles.length,
                           itemBuilder: (context, index){
                             return Slidable(
                               key: Key(index.toString()),
@@ -105,8 +118,8 @@ class _VehiclesScreenState extends State<VehiclesScreen> {
                                 color: Color(0xffF8F8F8),
                                 child: ListTile(
                                   leading: Column(mainAxisAlignment: MainAxisAlignment.center, children: [ Image(image: AssetImage('assets/images/plate.png'), width: MediaQuery.of(context).size.width * 0.25,) ]),
-                                  title: Text(items[index]),
-                                  subtitle: Text("Ultimo posteggio il 04/01/2021"),
+                                  title: Text(vehicles[index]["name"]),
+                                  subtitle: Text("Ultimo posteggio il " + DateFormat('dd/MM/yyyy').format(DateTime.parse(vehicles[index]["last_stay"].toString().substring(0, 10)))),
                                 ),
                               ),
                               secondaryActions: [

@@ -93,7 +93,7 @@ class _RightNowScreenState extends State<RightNowScreen> {
                 crossAxisCount: 4,
                 children: List.generate(100, (index) {
                   return Container(
-                    color: (index % 2 == 0) ? Colors.red : Colors.green,
+                    color: (index % 5 != 0) ? Colors.red : Colors.green,
                     child: Center(
                       child: Text(
                         'C$index',

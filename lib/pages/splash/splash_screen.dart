@@ -13,7 +13,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
   Future<bool> autoLogin() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    if(prefs.getInt('logged_in') == 1){
+    if(prefs.getBool('logged_in') == true){
       Navigator.pushAndRemoveUntil(
           context, 
           MaterialPageRoute(

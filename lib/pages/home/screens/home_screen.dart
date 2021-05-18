@@ -1,6 +1,12 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:http/http.dart' as http;
+
+import 'package:parkplus/functions.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreen extends StatefulWidget {
 
@@ -18,6 +24,21 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _show = false;
   int _current = 0;
 
+  dynamic userInfo;
+  bool hasObtainedUserInfos = false;
+
+  _getUsersInfo() async{
+    SharedPreferences userData = await SharedPreferences.getInstance();
+    print(userData.getString("access_token"));
+    if(await handleLogin()){
+      dynamic resp = await getUsersInfo();
+      setState(() {
+        userInfo = resp;
+        hasObtainedUserInfos = true; 
+      });
+    }
+  }
+
   Future<void> _getVehicles(){
     return Future.value();
   }
@@ -29,6 +50,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    _getUsersInfo();
   }
 
   @override
@@ -39,7 +61,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print(widget.statusBarHeight);
     return Container(
         child: Column(
           children: [
@@ -62,7 +83,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: Row(
+                child: hasObtainedUserInfos ? Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
@@ -70,14 +91,14 @@ class _HomeScreenState extends State<HomeScreen> {
                       text: TextSpan(
                         children: [
                           TextSpan(text: "Benvenuto, ", style: TextStyle(fontSize: 20, color: Colors.white),),
-                          TextSpan(text: "Utente", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: Colors.white),),
-                        ]
+                          TextSpan(text: userInfo["name"] + " " + userInfo["surname"], style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: Colors.white),),
+                        ] 
                       )
                     ),
                     Spacer(),
-                    CircleAvatar(backgroundImage: AssetImage('assets/images/me.jpg'), radius: 23, backgroundColor: Colors.white)
+                    CircleAvatar(backgroundImage: NetworkImage(userInfo["profile_picture"]), radius: 23, backgroundColor: Colors.white)
                   ],
-                ),
+                ) : SpinKitRipple(color: Colors.white),
               ),
             ),
             Container(
@@ -176,7 +197,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         return ListTile(
                           tileColor: (index % 2 != 0) ? Colors.grey[200] : Theme.of(context).backgroundColor,
                           leading: CircleAvatar(child: Text((index + 1).toString()), backgroundColor: Colors.green[800],),
-                          title: Text("Volvo demmerda il 04/01/2021"),
+                          title: Text("Tesla Model S il 04/01/2021"),
                           subtitle: Text("Pagati €15.20"),
                           trailing: Icon(Icons.arrow_right),
                         );

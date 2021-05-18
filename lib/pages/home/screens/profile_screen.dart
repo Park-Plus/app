@@ -2,8 +2,12 @@ import 'package:badges/badges.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:parkplus/pages/home/screens/vehicles_screen.dart';
 import 'package:settings_ui/settings_ui.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:intl/intl.dart';
+import 'package:parkplus/functions.dart';
 
 class ProfileScreen extends StatefulWidget {
   @override
@@ -17,11 +21,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   void initState() {
     super.initState();
+    _getUsersInfo();
   }
 
   @override
   void dispose(){
      super.dispose();
+  }
+
+  dynamic userInfo;
+  bool hasObtainedUserInfos = false;
+
+  _getUsersInfo() async{
+    if(await handleLogin()){
+      dynamic resp = await getUsersInfo();
+      setState(() {
+        userInfo = resp;
+        hasObtainedUserInfos = true; 
+      });
+    }
   }
 
   @override
@@ -39,17 +57,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width * 0.04),
-                child: Row(
+                child: hasObtainedUserInfos ? Row(
                   children: [
-                    CircleAvatar(backgroundImage: AssetImage('assets/images/me.jpg'), radius: 35,),
+                    CircleAvatar(backgroundImage: NetworkImage(userInfo['profile_picture']), radius: 35,),
                     Padding(
                       padding: EdgeInsets.only(left: MediaQuery.of(context).size.width * 0.07),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Align(alignment: Alignment.centerLeft, child: Text("Mattia Effendi", style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold))),
-                          Text("Registrato a Park+ dal 08/05/2021"),
+                          Align(alignment: Alignment.centerLeft, child: Text(userInfo['name'] + " " + userInfo['surname'], style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold))),
+                          Text("Registrato a Park+ dal " + DateFormat('dd/MM/yyyy').format(DateTime.parse(userInfo['created_at'].toString().substring(0, 10)))),
                           Padding(
                             padding: EdgeInsets.only(top: 8.0),
                             child: Badge(
@@ -63,7 +81,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                     )
                   ]
-                ),
+                ) : SpinKitRipple(color: Colors.white),
               )
             )
           ),
