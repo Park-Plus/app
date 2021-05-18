@@ -330,7 +330,7 @@ class _LoginRegisterState extends State<LoginRegister> {
                             color: Colors.green[800],
                             onPressed: () async {
                               SharedPreferences prefs = await SharedPreferences.getInstance();
-                              await prefs.setString('access_token', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzZXRSZWZyZXNoVFRMIjo2MCwiaXNzIjoiaHR0cDpcL1wvbG9jYWxob3N0OjgyNTJcL2F1dGhcL2xvZ2luIiwiaWF0IjoxNjIxMzQwNTcyLCJleHAiOjE2MjEzNDQxNzIsIm5iZiI6MTYyMTM0MDU3MiwianRpIjoiOVdDWUNOcTRtRzVjeTJtMCIsInN1YiI6MSwicHJ2IjoiMjNiZDVjODk0OWY2MDBhZGIzOWU3MDFjNDAwODcyZGI3YTU5NzZmNyJ9.KbKA7GSaRoEF0muVYqi_4M0wzDYOiHMCYRgMNeheyKM');
+                              await prefs.setString('access_token', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzZXRSZWZyZXNoVFRMIjo2MCwiaXNzIjoiaHR0cDpcL1wvbG9jYWxob3N0OjgyNTJcL2F1dGhcL2xvZ2luIiwiaWF0IjoxNjIxMzU4NjI5LCJleHAiOjE2MjEzNjIyMjksIm5iZiI6MTYyMTM1ODYyOSwianRpIjoidVRKUkZGV1Jxc2t0TkJEMyIsInN1YiI6MSwicHJ2IjoiMjNiZDVjODk0OWY2MDBhZGIzOWU3MDFjNDAwODcyZGI3YTU5NzZmNyJ9.TA-kXhA9Vb-P80UKbxT6Cp38wjpFrBkJiMycM2WiRJA');
                               await prefs.setBool('logged_in', true);
                               Navigator.pushAndRemoveUntil(
                                 context, 

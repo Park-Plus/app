@@ -68,13 +68,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         children: [
                           Align(alignment: Alignment.centerLeft, child: Text(userInfo['name'] + " " + userInfo['surname'], style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold))),
                           Text("Registrato a Park+ dal " + DateFormat('dd/MM/yyyy').format(DateTime.parse(userInfo['created_at'].toString().substring(0, 10)))),
-                          Padding(
+                          (userInfo["plan"] == "premium") ? Padding(
                             padding: EdgeInsets.only(top: 8.0),
                             child: Badge(
                               toAnimate: false,
                               shape: BadgeShape.square,
                               badgeColor: Colors.green[800],
                               badgeContent: Text('PREMIUM', style: TextStyle(color: Colors.white)),
+                            ),
+                          )
+                          :
+                          Padding(
+                            padding: EdgeInsets.only(top: 8.0),
+                            child: Badge(
+                              toAnimate: false,
+                              shape: BadgeShape.square,
+                              badgeColor: Colors.grey[700],
+                              badgeContent: Text('FREE', style: TextStyle(color: Colors.white)),
                             ),
                           )
                         ],

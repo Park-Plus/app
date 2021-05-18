@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:parkplus/functions.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:intl/intl.dart';
@@ -15,7 +16,7 @@ class _VehiclesScreenState extends State<VehiclesScreen> {
   bool _show = false;
 
   List vehicles;
-  bool hasObtainedUserInfos;
+  bool hasObtainedInfos = false;
 
   void handleScroll() async {
     _scrollController.addListener(() {
@@ -37,7 +38,7 @@ class _VehiclesScreenState extends State<VehiclesScreen> {
       if(this.mounted){
         setState(() {
           vehicles = resp;
-          hasObtainedUserInfos = true; 
+          hasObtainedInfos = true; 
         });
       }
     }
@@ -49,6 +50,7 @@ class _VehiclesScreenState extends State<VehiclesScreen> {
   void initState() {
     super.initState();
     handleScroll();
+    _getVehicles();
   }
 
   @override
@@ -103,7 +105,7 @@ class _VehiclesScreenState extends State<VehiclesScreen> {
                   height: MediaQuery.of(context).size.height * 0.62,
                   width: MediaQuery.of(context).size.width,
                   child: Container(
-                    child: FutureBuilder(
+                    child: hasObtainedInfos ? FutureBuilder(
                       future: _getVehicles(),
                       builder: (BuildContext context, AsyncSnapshot snapshot){
                         return ListView.builder(
@@ -161,7 +163,7 @@ class _VehiclesScreenState extends State<VehiclesScreen> {
                           },
                         );
                       }
-                    )
+                    ) : SpinKitRipple(color: Colors.green[800])
                   )
                 ),
               ),

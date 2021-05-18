@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 
 import 'package:parkplus/functions.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -25,22 +26,33 @@ class _HomeScreenState extends State<HomeScreen> {
   int _current = 0;
 
   dynamic userInfo;
+  dynamic lastStops;
   bool hasObtainedUserInfos = false;
+  bool hasObtainedLastStops = false;
 
   _getUsersInfo() async{
-    SharedPreferences userData = await SharedPreferences.getInstance();
-    print(userData.getString("access_token"));
     if(await handleLogin()){
       dynamic resp = await getUsersInfo();
-      setState(() {
-        userInfo = resp;
-        hasObtainedUserInfos = true; 
-      });
+      if(this.mounted){
+        setState(() {
+          userInfo = resp;
+          hasObtainedUserInfos = true; 
+        });
+      }
     }
   }
 
-  Future<void> _getVehicles(){
-    return Future.value();
+  Future<void> _getVehicles() async{
+    if(await handleLogin()){
+      dynamic resp = await getUsersLastStops();
+      if(this.mounted){
+        setState(() {
+          lastStops = resp;
+          hasObtainedLastStops = true; 
+          _itemsCount = lastStops.length;
+        });
+      }
+    }  
   }
 
   List<String> items = List<String>.generate(10000, (i) => "Nome auto $i");
@@ -51,6 +63,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     _getUsersInfo();
+    _getVehicles();
   }
 
   @override
@@ -179,7 +192,7 @@ class _HomeScreenState extends State<HomeScreen> {
             Expanded(
               child: Container(
                 width: MediaQuery.of(context).size.width * 0.98,
-                child: (_itemsCount == 0 ) ? 
+                child: hasObtainedLastStops ? ((_itemsCount == 0 ) ? 
                   Center(child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [ 
                     Image(image: AssetImage('assets/images/rolling_eyes_face.png'), width: MediaQuery.of(context).size.width * 0.2 ), Padding(
                       padding: const EdgeInsets.only(top: 15.0),
@@ -197,14 +210,14 @@ class _HomeScreenState extends State<HomeScreen> {
                         return ListTile(
                           tileColor: (index % 2 != 0) ? Colors.grey[200] : Theme.of(context).backgroundColor,
                           leading: CircleAvatar(child: Text((index + 1).toString()), backgroundColor: Colors.green[800],),
-                          title: Text("Tesla Model S il 04/01/2021"),
-                          subtitle: Text("Pagati €15.20"),
+                          title: Text(lastStops[index]['vehicle']['name'] + " il " + DateFormat('dd/MM/yyyy').format(DateTime.parse(lastStops[index]['date'].toString().substring(0, 10)))),
+                          subtitle: Text("Pagati €" + lastStops[index]['invoice']['price'].toStringAsFixed(2)),
                           trailing: Icon(Icons.arrow_right),
                         );
                       },
                     );
                   }
-                )
+                )) : SpinKitRipple(color: Colors.green[800])
               ),
             ),
           ]
