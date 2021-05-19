@@ -1,10 +1,9 @@
 import 'package:http/http.dart' as http;
-import 'package:flutter/rendering.dart';
 import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
-final String BASE_URL = "http://10.0.2.2:8252";
+final String baseUrl = "http://10.0.2.2:8252";
 
 /*
   Local development: http://10.0.2.2:8252
@@ -16,7 +15,7 @@ Future<bool> handleLogin() async{
   String token = prefs.getString("access_token");
   print(token);
   var r = await http.get(
-    Uri.parse(BASE_URL + "/auth/me"),
+    Uri.parse(baseUrl + "/auth/me"),
     headers: {
       'Authorization': 'Bearer ' + token
     }
@@ -37,7 +36,7 @@ Future<bool> handleLogin() async{
 
 Future<String> renewToken(String oldToken) async{
   var r = await http.post(
-  Uri.parse(BASE_URL + "/auth/refresh"),
+  Uri.parse(baseUrl + "/auth/refresh"),
     headers: {
       'Authorization': 'Bearer ' + oldToken
     }
@@ -54,7 +53,7 @@ Future<dynamic> getUsersInfo() async{
   SharedPreferences prefs = await SharedPreferences.getInstance();
   String token = prefs.getString("access_token");
   var r = await http.get(
-    Uri.parse(BASE_URL + "/auth/me"),
+    Uri.parse(baseUrl + "/auth/me"),
     headers: {
       'Authorization': 'Bearer ' + token
     }
@@ -66,7 +65,7 @@ Future<dynamic> getVehicles() async{
   SharedPreferences prefs = await SharedPreferences.getInstance();
   String token = prefs.getString("access_token"); 
   var r = await http.get(
-    Uri.parse(BASE_URL + "/user/vehicles/list"),
+    Uri.parse(baseUrl + "/user/vehicles/list"),
     headers: {
       'Authorization': 'Bearer ' + token
     }
@@ -78,7 +77,7 @@ Future<dynamic> getUsersLastStops() async{
   SharedPreferences prefs = await SharedPreferences.getInstance();
   String token = prefs.getString("access_token"); 
   var r = await http.get(
-    Uri.parse(BASE_URL + "/user/stays/lasts"),
+    Uri.parse(baseUrl + "/user/stays/lasts"),
     headers: {
       'Authorization': 'Bearer ' + token
     }
@@ -90,7 +89,7 @@ Future<dynamic> getParkingStatus() async{
   SharedPreferences prefs = await SharedPreferences.getInstance();
   String token = prefs.getString("access_token"); 
   var r = await http.get(
-    Uri.parse(BASE_URL + "/park/status"),
+    Uri.parse(baseUrl + "/park/status"),
     headers: {
       'Authorization': 'Bearer ' + token
     }
@@ -102,7 +101,7 @@ Future<dynamic> getFreePlace() async{
   SharedPreferences prefs = await SharedPreferences.getInstance();
   String token = prefs.getString("access_token"); 
   var r = await http.get(
-    Uri.parse(BASE_URL + "/park/getFree"),
+    Uri.parse(baseUrl + "/park/getFree"),
     headers: {
       'Authorization': 'Bearer ' + token
     }

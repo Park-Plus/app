@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
 
 class BookingsScreen extends StatefulWidget {
   @override

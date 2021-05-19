@@ -35,6 +35,7 @@ class _LoginRegisterState extends State<LoginRegister> {
     setState(() {
           pagina = prevState;
     });
+    return Future.value();
   }
 
   final formKey = GlobalKey<FormBuilderState>();
@@ -330,7 +331,7 @@ class _LoginRegisterState extends State<LoginRegister> {
                             color: Colors.green[800],
                             onPressed: () async {
                               SharedPreferences prefs = await SharedPreferences.getInstance();
-                              await prefs.setString('access_token', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzZXRSZWZyZXNoVFRMIjo2MCwiaXNzIjoiaHR0cDpcL1wvbG9jYWxob3N0OjgyNTJcL2F1dGhcL2xvZ2luIiwiaWF0IjoxNjIxMzU4NjI5LCJleHAiOjE2MjEzNjIyMjksIm5iZiI6MTYyMTM1ODYyOSwianRpIjoidVRKUkZGV1Jxc2t0TkJEMyIsInN1YiI6MSwicHJ2IjoiMjNiZDVjODk0OWY2MDBhZGIzOWU3MDFjNDAwODcyZGI3YTU5NzZmNyJ9.TA-kXhA9Vb-P80UKbxT6Cp38wjpFrBkJiMycM2WiRJA');
+                              await prefs.setString('access_token', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC8xMjcuMC4wLjE6ODI1MlwvYXV0aFwvcmVmcmVzaCIsImlhdCI6MTYyMTMyOTgyOSwiZXhwIjoxNjIxNDIwNTU1LCJuYmYiOjE2MjE0MTY5NTUsImp0aSI6ImFNUTZERUpHU2dadjFMNHEiLCJzZXRSZWZyZXNoVFRMIjo2MCwic3ViIjoxLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.vBLmh3pX5YtLdlpSMH02yQGlbNYkuWS2yDDfSsAJcRI');
                               await prefs.setBool('logged_in', true);
                               Navigator.pushAndRemoveUntil(
                                 context, 

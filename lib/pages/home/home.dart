@@ -4,7 +4,6 @@ import 'package:flutter/rendering.dart';
 import 'package:parkplus/pages/home/screens/right_now_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/bookings_screen.dart';
-import 'screens/vehicles_screen.dart';
 import 'screens/profile_screen.dart';
 
 class Home extends StatefulWidget {
