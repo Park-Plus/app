@@ -13,7 +13,6 @@ final String baseUrl = "http://10.0.2.2:8252";
 Future<bool> handleLogin() async{
   SharedPreferences prefs = await SharedPreferences.getInstance();
   String token = prefs.getString("access_token");
-  print(token);
   var r = await http.get(
     Uri.parse(baseUrl + "/auth/me"),
     headers: {
@@ -107,4 +106,70 @@ Future<dynamic> getFreePlace() async{
     }
   );
   return jsonDecode(r.body);
+}
+
+Future<dynamic> getPaymentMethods() async{
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  String token = prefs.getString("access_token"); 
+  var r = await http.get(
+    Uri.parse(baseUrl + "/user/paymentMethods/list"),
+    headers: {
+      'Authorization': 'Bearer ' + token
+    }
+  );
+  return jsonDecode(r.body);
+}
+
+Future<dynamic> deletePaymentMethod(String cardID) async{
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  String token = prefs.getString("access_token"); 
+  var r = await http.delete(
+    Uri.parse(baseUrl + "/user/paymentMethods/delete/" + cardID),
+    headers: {
+      'Authorization': 'Bearer ' + token
+    }
+  );
+  return jsonDecode(r.body);
+}
+
+Future<dynamic> setDefaultPaymentMethod(String cardID) async{
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  String token = prefs.getString("access_token"); 
+  Map data = {
+    'card_id': cardID
+  };
+  var r = await http.post(
+    Uri.parse(baseUrl + "/user/paymentMethods/setDefault"),
+    headers: {
+      'Authorization': 'Bearer ' + token
+    },
+    body: data
+  );
+  return jsonDecode(r.body);
+}
+
+Future<bool> addPaymentMethod(String cardNumber, String expiryDate, String cardHolderName, String cvv) async{
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  String token = prefs.getString("access_token"); 
+
+  Map data = {
+    'card_number': cardNumber,
+    'expiration_month': expiryDate.split('/')[0],
+    'expiration_year': '20' + expiryDate.split('/')[1],
+    'cvc': cvv
+  };
+
+  var r = await http.post(
+    Uri.parse(baseUrl + "/user/paymentMethods/add"),
+    headers: {
+      'Authorization': 'Bearer ' + token
+    },
+    body: data
+  );
+  print(r.body);
+  if(r.statusCode == 200){
+    return true;
+  }else{
+    return false;
+  }
 }

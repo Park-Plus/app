@@ -3,7 +3,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:parkplus/pages/home/screens/vehicles_screen.dart';
+import 'package:parkplus/pages/profile/payments/payment_methods.dart';
+import 'package:parkplus/pages/profile/vehicles.dart';
 import 'package:settings_ui/settings_ui.dart';
 import 'package:intl/intl.dart';
 import 'package:parkplus/functions.dart';
@@ -123,7 +124,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       SettingsTile(
                         title: 'Metodi di pagamento',
                         leading: Icon(Icons.credit_card),
-                        onPressed: (BuildContext context) {},
+                        onPressed: (BuildContext context) {
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => PaymentMethodsScreen()));
+                        },
                       ),
                       SettingsTile(
                         title: 'Fatture',

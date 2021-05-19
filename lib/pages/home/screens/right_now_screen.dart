@@ -20,10 +20,12 @@ class _RightNowScreenState extends State<RightNowScreen> {
   _getParkInfos() async{
     if(await handleLogin()){
       dynamic resp = await getParkingStatus();
-      setState(() {
-        parkInfo = resp;
-        hasObtainedParkInfos = true; 
-      });
+      if(this.mounted){
+        setState(() {
+          parkInfo = resp;
+          hasObtainedParkInfos = true; 
+        });
+      }
     }
   }
 

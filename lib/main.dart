@@ -1,9 +1,11 @@
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:parkplus/pages/splash/splash_screen.dart';
 import 'package:flutter/material.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(ParkPlus());
+  EasyLoading.instance.indicatorType = EasyLoadingIndicatorType.ripple;
 }
 
 class ParkPlus extends StatelessWidget {
@@ -20,6 +22,7 @@ class ParkPlus extends StatelessWidget {
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       home: SplashScreen(),
+      builder: EasyLoading.init(),
     );
   }
 }

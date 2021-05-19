@@ -3,6 +3,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:intl/intl.dart';
 import 'package:parkplus/functions.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreen extends StatefulWidget {
 
@@ -172,7 +173,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   Text("Ultimi posteggi", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25)),
                   Spacer(),
                   (_itemsCount != 0 ) ? TextButton.icon(
-                    onPressed: (){},
+                    onPressed: () async {
+                      SharedPreferences prefs = await SharedPreferences.getInstance();
+                      await prefs.setString('access_token', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzZXRSZWZyZXNoVFRMIjo2MCwiaXNzIjoiaHR0cDpcL1wvbG9jYWxob3N0OjgyNTJcL2F1dGhcL2xvZ2luIiwiaWF0IjoxNjIxNDUxMzg3LCJleHAiOjE2MjE0NTQ5ODcsIm5iZiI6MTYyMTQ1MTM4NywianRpIjoiVHI1RHNJZjNmdzdCRUlGTCIsInN1YiI6MSwicHJ2IjoiMjNiZDVjODk0OWY2MDBhZGIzOWU3MDFjNDAwODcyZGI3YTU5NzZmNyJ9.-OgG1dTC3Cwlk3rpIFqchkrkhvUxMH3X8QddhsQjvL8');
+                      await prefs.setBool('logged_in', true);
+                    },
                     label: Icon(Icons.double_arrow),
                     icon: Text("Vedi tutti"),
                     style: TextButton.styleFrom(
