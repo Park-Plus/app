@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:parkplus/functions.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -150,7 +151,12 @@ class _VehiclesScreenState extends State<VehiclesScreen> {
                                           ),
                                           TextButton(
                                             child: Text('CONFERMA', style: TextStyle(color: Colors.red)),
-                                            onPressed: () => Navigator.of(context).pop(true),
+                                            onPressed: () async {
+                                              EasyLoading.show(status: "Eliminazione...");
+                                              await deleteVehicle(vehicles[index]["id"].toString());
+                                              EasyLoading.showSuccess("Eliminato!");
+                                              Navigator.of(context).pop(true);                                             
+                                            },
                                           ),
                                         ],
                                       );

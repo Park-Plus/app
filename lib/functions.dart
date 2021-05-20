@@ -30,6 +30,7 @@ Future<bool> handleLogin() async{
       return false;
     }
   }
+  print(token);
   return true;
 }
 
@@ -48,23 +49,17 @@ Future<String> renewToken(String oldToken) async{
   }
 }
 
+/* 
+
+  HOME PAGE
+
+*/
+
 Future<dynamic> getUsersInfo() async{
   SharedPreferences prefs = await SharedPreferences.getInstance();
   String token = prefs.getString("access_token");
   var r = await http.get(
     Uri.parse(baseUrl + "/auth/me"),
-    headers: {
-      'Authorization': 'Bearer ' + token
-    }
-  );
-  return jsonDecode(r.body);
-}
-
-Future<dynamic> getVehicles() async{
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  String token = prefs.getString("access_token"); 
-  var r = await http.get(
-    Uri.parse(baseUrl + "/user/vehicles/list"),
     headers: {
       'Authorization': 'Bearer ' + token
     }
@@ -83,6 +78,12 @@ Future<dynamic> getUsersLastStops() async{
   );
   return jsonDecode(r.body);
 }
+
+/* 
+
+  RIGHT NOW PAGE
+
+*/
 
 Future<dynamic> getParkingStatus() async{
   SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -107,6 +108,12 @@ Future<dynamic> getFreePlace() async{
   );
   return jsonDecode(r.body);
 }
+
+/* 
+
+  PAYMENT METHODS
+
+*/
 
 Future<dynamic> getPaymentMethods() async{
   SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -172,4 +179,34 @@ Future<bool> addPaymentMethod(String cardNumber, String expiryDate, String cardH
   }else{
     return false;
   }
+}
+
+/* 
+
+  VEHICLES PAGE
+
+*/
+
+Future<dynamic> getVehicles() async{
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  String token = prefs.getString("access_token"); 
+  var r = await http.get(
+    Uri.parse(baseUrl + "/user/vehicles/list"),
+    headers: {
+      'Authorization': 'Bearer ' + token
+    }
+  );
+  return jsonDecode(r.body);
+}
+
+Future<dynamic> deleteVehicle(String vehicleID) async{
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  String token = prefs.getString("access_token"); 
+  var r = await http.delete(
+    Uri.parse(baseUrl + "/user/vehicles/delete/" + vehicleID),
+    headers: {
+      'Authorization': 'Bearer ' + token
+    }
+  );
+  return jsonDecode(r.body);
 }
