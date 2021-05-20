@@ -2,6 +2,8 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:parkplus/pages/splash/splash_screen.dart';
 import 'package:flutter/material.dart';
 
+GlobalKey globalKey = GlobalKey();
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(ParkPlus());

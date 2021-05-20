@@ -1,8 +1,10 @@
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:parkplus/pages/home/home.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:parkplus/functions.dart';
 
 TValue case2<TOptionType, TValue>(
   TOptionType selectedOption,
@@ -29,11 +31,17 @@ class _LoginRegisterState extends State<LoginRegister> {
   int prevState = 0;
 
   bool mailErrata = false;
+  bool passwordHasError = false;
   bool isPasswordVisible = false;
+
+  String mail;
+  String password;
 
   Future<bool> _interceptBackKey() {
     setState(() {
-          pagina = prevState;
+      pagina = prevState;
+      mailErrata = false;
+      passwordHasError = false;
     });
     return Future.value();
   }
@@ -275,6 +283,7 @@ class _LoginRegisterState extends State<LoginRegister> {
                               name: 'email',
                               onChanged: (val) {
                                 setState(() {
+                                  mail = val;
                                   mailErrata = !formKey.currentState.fields["email"].validate();
                                 });
                               },
@@ -282,7 +291,9 @@ class _LoginRegisterState extends State<LoginRegister> {
                                 border: InputBorder.none,
                                 icon: Icon(Icons.mail, color: mailErrata ? Colors.red[800] : Colors.green[800]),
                               ),
-                              validator: FormBuilderValidators.email(context, errorText: '')
+                              validator: FormBuilderValidators.compose([
+                                FormBuilderValidators.email(context, errorText: ''),
+                              ])
                             ),
                           ]
                         ),
@@ -292,7 +303,7 @@ class _LoginRegisterState extends State<LoginRegister> {
                         child: Container(
                           padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
                           decoration: BoxDecoration(
-                            color: Colors.green[100],
+                            color: passwordHasError ? Colors.red[100] : Colors.green[100],
                             borderRadius: BorderRadius.circular(30)
                           ),
                           child: Stack(
@@ -303,13 +314,23 @@ class _LoginRegisterState extends State<LoginRegister> {
                                 decoration: InputDecoration(
                                   border: InputBorder.none,
                                   contentPadding: EdgeInsets.fromLTRB(6, 6, 48, 6),
-                                  icon: Icon(Icons.lock, color: Colors.green[800])
+                                  icon: Icon(Icons.lock, color: passwordHasError ? Colors.red[800] : Colors.green[800])
                                 ),
                                 obscureText: !isPasswordVisible,
+                                onChanged: (val){
+                                  setState(() {
+                                    password = val; 
+                                    if(val == ""){
+                                      passwordHasError = true;
+                                    }else{
+                                      passwordHasError = false;
+                                    }          
+                                  });
+                                },
                               ),
                               IconButton(
                                 enableFeedback: false,
-                                icon: Icon(isPasswordVisible ? Icons.visibility_off : Icons.visibility, color: Colors.green[800]),
+                                icon: Icon(isPasswordVisible ? Icons.visibility_off : Icons.visibility, color: passwordHasError ? Colors.red[800] : Colors.green[800]),
                                 onPressed: () {
                                   setState(() {
                                     isPasswordVisible = !isPasswordVisible;
@@ -330,16 +351,40 @@ class _LoginRegisterState extends State<LoginRegister> {
                             height: 60,
                             color: Colors.green[800],
                             onPressed: () async {
-                              SharedPreferences prefs = await SharedPreferences.getInstance();
-                              await prefs.setString('access_token', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzZXRSZWZyZXNoVFRMIjo2MCwiaXNzIjoiaHR0cDpcL1wvbG9jYWxob3N0OjgyNTJcL2F1dGhcL2xvZ2luIiwiaWF0IjoxNjIxNDUxMzg3LCJleHAiOjE2MjE0NTQ5ODcsIm5iZiI6MTYyMTQ1MTM4NywianRpIjoiVHI1RHNJZjNmdzdCRUlGTCIsInN1YiI6MSwicHJ2IjoiMjNiZDVjODk0OWY2MDBhZGIzOWU3MDFjNDAwODcyZGI3YTU5NzZmNyJ9.-OgG1dTC3Cwlk3rpIFqchkrkhvUxMH3X8QddhsQjvL8');
-                              await prefs.setBool('logged_in', true);
-                              Navigator.pushAndRemoveUntil(
-                                context, 
-                                MaterialPageRoute(
-                                  builder: (context) => Home()
-                                ), 
-                              ModalRoute.withName("/Home")
-                              );
+                              if(mail == "" || mail == null){
+                                setState(() {
+                                  mailErrata = true;                                  
+                                });
+                              }else{
+                                setState(() {
+                                  mailErrata = false;                                  
+                                });
+                              }
+                              if(password == "" || password == null){
+                                setState(() {
+                                  passwordHasError = true;                                  
+                                });
+                              }else{
+                                setState(() {
+                                  passwordHasError = false;                                  
+                                });
+                              }
+                              if(!passwordHasError && !mailErrata){
+                                EasyLoading.show(status: 'Login in corso...');
+                                Future.delayed(Duration(milliseconds: 500), () async {
+                                  bool loggedIn = await login(mail, password);
+                                  if(loggedIn){
+                                    Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => Home()), ModalRoute.withName("/Home"));
+                                    EasyLoading.showSuccess('Login effettuato!');
+                                  }else{
+                                    EasyLoading.showError('Errore nel login!');
+                                    setState(() {
+                                      mailErrata = true;
+                                      passwordHasError = true;
+                                    });
+                                  }
+                                });
+                              }
                             },
                             child: Text("ACCEDI", style: TextStyle(color: Colors.white))
                           ),

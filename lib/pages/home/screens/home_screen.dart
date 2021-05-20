@@ -4,7 +4,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:intl/intl.dart';
 import 'package:parkplus/functions.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:parkplus/pages/login_register/login_register.dart';
 class HomeScreen extends StatefulWidget {
 
   final double statusBarHeight;
@@ -19,6 +19,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   ScrollController _scrollController = new ScrollController();
   int _current = 0;
+  int _itemsCount = 5;
 
   dynamic userInfo;
   dynamic lastStops;
@@ -34,6 +35,8 @@ class _HomeScreenState extends State<HomeScreen> {
           hasObtainedUserInfos = true; 
         });
       }
+    }else{
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginRegister()));
     }
   }
 
@@ -47,12 +50,10 @@ class _HomeScreenState extends State<HomeScreen> {
           _itemsCount = lastStops.length;
         });
       }
-    }  
+    }else{
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginRegister()));
+    }
   }
-
-  List<String> items = List<String>.generate(10000, (i) => "Nome auto $i");
-
-  int _itemsCount = 5;
 
   @override
   void initState() {
@@ -174,9 +175,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   Spacer(),
                   (_itemsCount != 0 ) ? TextButton.icon(
                     onPressed: () async {
-                      SharedPreferences prefs = await SharedPreferences.getInstance();
-                      await prefs.setString('access_token', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzZXRSZWZyZXNoVFRMIjo2MCwiaXNzIjoiaHR0cDpcL1wvbG9jYWxob3N0OjgyNTJcL2F1dGhcL2xvZ2luIiwiaWF0IjoxNjIxNDUxMzg3LCJleHAiOjE2MjE0NTQ5ODcsIm5iZiI6MTYyMTQ1MTM4NywianRpIjoiVHI1RHNJZjNmdzdCRUlGTCIsInN1YiI6MSwicHJ2IjoiMjNiZDVjODk0OWY2MDBhZGIzOWU3MDFjNDAwODcyZGI3YTU5NzZmNyJ9.-OgG1dTC3Cwlk3rpIFqchkrkhvUxMH3X8QddhsQjvL8');
-                      await prefs.setBool('logged_in', true);
                     },
                     label: Icon(Icons.double_arrow),
                     icon: Text("Vedi tutti"),

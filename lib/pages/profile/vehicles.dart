@@ -45,8 +45,6 @@ class _VehiclesScreenState extends State<VehiclesScreen> {
     }
   }
 
-  List<String> items = List<String>.generate(10000, (i) => "Nome auto $i");
-
   @override
   void initState() {
     super.initState();

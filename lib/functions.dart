@@ -10,9 +10,50 @@ final String baseUrl = "http://10.0.2.2:8252";
   Production: https://api.parkplus.cc
 */
 
-Future<bool> handleLogin() async{
+Future<bool> login(String mail, String password) async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  Map data = {
+    'email': mail,
+    'password': password
+  };
+  var r = await http.post(
+    Uri.parse(baseUrl + "/auth/login"),
+    body: data
+  );
+  if(r.statusCode == 200){
+    dynamic js = jsonDecode(r.body);
+    prefs.setBool('logged_in', true);
+    prefs.setString('access_token', js["access_token"]);
+    return true;
+  }
+  else{
+    return false;
+  }
+}
+
+Future<bool> logout() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   String token = prefs.getString("access_token");
+  var r = await http.post(
+    Uri.parse(baseUrl + "/auth/logout"),
+    headers: {
+      'Authorization': 'Bearer ' + token
+    }
+  );
+  if(r.statusCode == 200){
+    prefs.remove('logged_in');
+    prefs.remove('access_token');
+    return true;
+  }
+  else{
+    return false;
+  }
+}
+
+Future<bool> handleLogin() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  String token = prefs.getString("access_token");
+  if(token == null) return false;
   var r = await http.get(
     Uri.parse(baseUrl + "/auth/me"),
     headers: {
@@ -22,9 +63,11 @@ Future<bool> handleLogin() async{
   if(r.statusCode == 401){
     String newToken = await renewToken(token);
     SharedPreferences prefs = await SharedPreferences.getInstance();
+    print(r.body);
     if(newToken != "-"){
       prefs.setString("access_token", newToken);
     }else{
+      print("Sloggato");
       prefs.setBool("logged_in", false);
       prefs.remove("access_token");
       return false;
