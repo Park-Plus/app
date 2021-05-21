@@ -1,9 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:intl/intl.dart';
 import 'package:parkplus/functions.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:parkplus/pages/login_register/login_register.dart';
 class HomeScreen extends StatefulWidget {
 
@@ -25,6 +26,8 @@ class _HomeScreenState extends State<HomeScreen> {
   dynamic lastStops;
   bool hasObtainedUserInfos = false;
   bool hasObtainedLastStops = false;
+
+  String reqResponse = '[{"type":"UNPAID_INVOICE","title":"Fattura non pagata","data":{"unpaid_count":1,"invoice":[{"id":1,"price":21.3,"user_id":1,"stripe_payment_id":null,"created_at":"2021-05-21T08:43:18.000000Z","updated_at":"2021-05-21T08:43:18.000000Z"}]}},{"type":"SWITCH_TO_PREMIUM","title":"Passa a premium","data":[]},{"type":"NEXT_MILESTONES","title":"Qualche spoiler \ud83d\ude80","data":[]}]';
 
   _getUsersInfo() async{
     if(await handleLogin()){
@@ -66,6 +69,64 @@ class _HomeScreenState extends State<HomeScreen> {
   void dispose(){
      _scrollController.removeListener(() {});
      super.dispose();
+  }
+
+  Widget cardWidget(BuildContext context, int index){
+    dynamic js = jsonDecode(reqResponse);
+    if(js[index]["type"] == "UNPAID_INVOICE"){
+      return Container(
+        width: MediaQuery.of(context).size.width,
+        margin: EdgeInsets.symmetric(horizontal: 5.0),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topRight,
+            end: Alignment.bottomLeft,
+            colors: [
+              Colors.green[400],
+              Colors.green[700]
+            ]
+          ),
+          borderRadius: BorderRadius.circular(10)
+        ),
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: (MediaQuery.of(context).size.width*0.15)/2),
+          child: SizedBox(
+            width: MediaQuery.of(context).size.width,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Align(alignment: Alignment.centerLeft, child: Text(js[index]["title"], style: TextStyle(fontWeight: FontWeight.bold, fontSize: MediaQuery.of(context).size.width * 0.065, color: Colors.white))),
+                Align(alignment: Alignment.centerLeft, child: Text("Hai " + js[index]['data']['unpaid_count'].toString() + " " + js[index]["title"].toLowerCase() + " per un totale di 5 euro", style: TextStyle(color: Colors.white))),
+                Padding(
+                  padding: const EdgeInsets.only(top: 8.0),
+                  child: Container(
+                    width: MediaQuery.of(context).size.width, child: OutlinedButton(
+                    onPressed: (){}, child: Text("Vai alle fatture"),
+                    style: OutlinedButton.styleFrom(
+                        primary: Colors.white,
+                        onSurface: Colors.grey,
+                        side: BorderSide(width: 2, color: Colors.white),
+                      )
+                    )
+                  ),
+                )
+              ],
+            ),
+          ),
+        )
+      );
+    }else{
+      return Container(
+        width: MediaQuery.of(context).size.width,
+        margin: EdgeInsets.symmetric(horizontal: 5.0),
+        decoration: BoxDecoration(
+          color: Colors.grey[350],
+          borderRadius: BorderRadius.circular(10)
+        ),
+        child: Center(child: Text('', style: TextStyle(fontSize: 16.0),))
+      );     
+    }
   }
 
   @override
@@ -118,6 +179,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                  CarouselSlider(
                   options: CarouselOptions(
+                    autoPlayInterval: const Duration(seconds: 10),
+                    autoPlay: true,
                     viewportFraction: 1.0,
                     height: MediaQuery.of(context).size.height * 0.2,
                     onPageChanged: (index, reason) {
@@ -126,18 +189,10 @@ class _HomeScreenState extends State<HomeScreen> {
                       });
                     }
                   ),
-                  items: [1, 2, 3].map((i) {
+                  items: [0, 1, 2].map((i) {
                       return Builder(
                         builder: (BuildContext context) {
-                          return Container(
-                            width: MediaQuery.of(context).size.width,
-                            margin: EdgeInsets.symmetric(horizontal: 5.0),
-                            decoration: BoxDecoration(
-                              color: Colors.grey[350],
-                              borderRadius: BorderRadius.circular(10)
-                            ),
-                            child: Center(child: Text('', style: TextStyle(fontSize: 16.0),))
-                          );
+                          return cardWidget(context, i);
                         },
                       );
                     }).toList(),
