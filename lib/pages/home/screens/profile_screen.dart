@@ -164,7 +164,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       EasyLoading.show(status: 'Logout in corso...');
                                       bool loggedOut = await logout();
                                       if(loggedOut){
-                                        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginRegister()));
+                                        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginRegister())); // TODO fix looking up a deactivated widget's ancestor is unsafe
                                       }
                                       EasyLoading.showSuccess('Logout effettuato!');
                                     },

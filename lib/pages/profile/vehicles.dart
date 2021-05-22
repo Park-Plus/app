@@ -19,6 +19,7 @@ class _VehiclesScreenState extends State<VehiclesScreen> {
   List vehicles;
   bool hasObtainedInfos = false;
 
+
   void handleScroll() async {
     _scrollController.addListener(() {
       if (_scrollController.position.userScrollDirection ==
@@ -118,7 +119,7 @@ class _VehiclesScreenState extends State<VehiclesScreen> {
                               child: Container(
                                 color: Color(0xffF8F8F8),
                                 child: ListTile(
-                                  leading: Column(mainAxisAlignment: MainAxisAlignment.center, children: [ Image(image: AssetImage('assets/images/plate.png'), width: MediaQuery.of(context).size.width * 0.25,) ]),
+                                  leading: Column(mainAxisAlignment: MainAxisAlignment.center, children: [ Image(image: NetworkImage(utilsBaseUrl + "/plates_generator/plate.php?plate=" + vehicles[index]["plate"]), width: MediaQuery.of(context).size.width * 0.25,) ]),
                                   title: Text(vehicles[index]["name"]),
                                   subtitle: Text("Ultimo posteggio il " + DateFormat('dd/MM/yyyy').format(DateTime.parse(vehicles[index]["last_stay"].toString().substring(0, 10)))),
                                 ),

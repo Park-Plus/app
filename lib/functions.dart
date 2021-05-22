@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
 final String baseUrl = "http://10.0.2.2:8252";
+final String utilsBaseUrl = 'http://10.0.2.2:8253';
 
 /*
   Local development: http://10.0.2.2:8252

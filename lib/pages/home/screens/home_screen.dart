@@ -10,6 +10,7 @@ import 'package:parkplus/pages/home/cards/ongoing_stay.dart';
 import 'package:parkplus/pages/home/cards/switch_to_premium.dart';
 import 'package:parkplus/pages/home/cards/unpaid_invoice.dart';
 import 'package:parkplus/pages/login_register/login_register.dart';
+import 'package:parkplus/pages/stays/stays_list.dart';
 class HomeScreen extends StatefulWidget {
 
   final double statusBarHeight;
@@ -78,13 +79,17 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void didChangeDependencies() async{
     super.didChangeDependencies();
-    await getCards().then((value){
-      setState(() {
-        items = value;
-        hasObtainedCards = true;
+    if(await handleLogin()){
+      await getCards().then((value){
+        if(this.mounted){
+          setState(() {
+            items = value;
+            hasObtainedCards = true;
+          });
+          buildCardsList();
+        }
       });
-      buildCardsList();
-    });
+    }
   }
 
   List<Widget> cards = [];
@@ -215,7 +220,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   Text("Ultimi posteggi", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25)),
                   Spacer(),
                   (_itemsCount != 0 ) ? TextButton.icon(
-                    onPressed: () async {
+                    onPressed: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => StaysScreen()));
                     },
                     label: Icon(Icons.double_arrow),
                     icon: Text("Vedi tutti"),

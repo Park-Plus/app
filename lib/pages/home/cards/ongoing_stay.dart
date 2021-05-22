@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
-
+import 'package:parkplus/functions.dart';
 import 'package:flutter_emoji/flutter_emoji.dart';
 
 T getRandomElement<T>(List<T> list) {
@@ -10,6 +10,9 @@ T getRandomElement<T>(List<T> list) {
 }
 
 Widget ongoingStay(context, js, index){
+  var currentStayTime = DateTime.now().difference(DateTime.parse(js[index]["data"]["stay"]["created_at"]));
+  String twoDigits(int n) => n.toString().padLeft(2, "0");
+  String twoDigitMinutes = twoDigits(currentStayTime.inMinutes.remainder(60));
 
   List<String> randomPhrases = ["La tua auto è sana e tranquilla! :sunglasses:", "Prendila con comodo. :innocent:", "Facile, no? :nerd_face:"];
   var parser = EmojiParser();
@@ -41,9 +44,9 @@ Widget ongoingStay(context, js, index){
               padding: const EdgeInsets.only(top: 8.0),
               child: Row(
                 children: [
-                  Image(image: AssetImage('assets/images/plate.png'), width: MediaQuery.of(context).size.width * 0.4,),
+                  Image(image: NetworkImage(utilsBaseUrl + "/plates_generator/plate.php?plate=" + js[index]["data"]["vehicle"]["plate"]), width: MediaQuery.of(context).size.width * 0.4,),
                   Spacer(),
-                  Column(children: [ Text("1.50€", style: TextStyle(fontWeight: FontWeight.bold, fontSize: MediaQuery.of(context).size.width * 0.05, color: Colors.white)), Text("00:15", style: TextStyle(color: Colors.white))]),
+                  Column(children: [ Text(js[index]["data"]["stay"]["current_price"].toStringAsPrecision(2) + "€", style: TextStyle(fontWeight: FontWeight.bold, fontSize: MediaQuery.of(context).size.width * 0.05, color: Colors.white)), Text(twoDigits(currentStayTime.inHours) + ":" + twoDigitMinutes, style: TextStyle(color: Colors.white))]),
                 ],
               ),
             ),
