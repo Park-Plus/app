@@ -41,6 +41,8 @@ dependencies:
   flutter_easyloading: ^3.0.0
   flutter_credit_card: ^2.0.0
   shimmer: ^2.0.0
+  decimal: ^0.3.0
+  flutter_emoji: ^2.0.0
 
 dev_dependencies:
   flutter_test:

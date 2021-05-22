@@ -122,6 +122,19 @@ Future<dynamic> getUsersLastStops() async{
   return jsonDecode(r.body);
 }
 
+Future<dynamic> getCards() async{
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  String token = prefs.getString("access_token"); 
+  var r = await http.get(
+    Uri.parse(baseUrl + "/user/appHomeCards"),
+    headers: {
+      'Authorization': 'Bearer ' + token
+    }
+  );
+  return jsonDecode(r.body);
+}
+
+
 /* 
 
   RIGHT NOW PAGE

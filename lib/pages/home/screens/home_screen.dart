@@ -5,6 +5,10 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:intl/intl.dart';
 import 'package:parkplus/functions.dart';
+import 'package:parkplus/pages/home/cards/next_milestones.dart';
+import 'package:parkplus/pages/home/cards/ongoing_stay.dart';
+import 'package:parkplus/pages/home/cards/switch_to_premium.dart';
+import 'package:parkplus/pages/home/cards/unpaid_invoice.dart';
 import 'package:parkplus/pages/login_register/login_register.dart';
 class HomeScreen extends StatefulWidget {
 
@@ -24,10 +28,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
   dynamic userInfo;
   dynamic lastStops;
+  dynamic items; 
   bool hasObtainedUserInfos = false;
   bool hasObtainedLastStops = false;
-
-  String reqResponse = '[{"type":"UNPAID_INVOICE","title":"Fattura non pagata","data":{"unpaid_count":1,"invoice":[{"id":1,"price":21.3,"user_id":1,"stripe_payment_id":null,"created_at":"2021-05-21T08:43:18.000000Z","updated_at":"2021-05-21T08:43:18.000000Z"}]}},{"type":"SWITCH_TO_PREMIUM","title":"Passa a premium","data":[]},{"type":"NEXT_MILESTONES","title":"Qualche spoiler \ud83d\ude80","data":[]}]';
+  bool hasObtainedCards = false;
 
   _getUsersInfo() async{
     if(await handleLogin()){
@@ -71,61 +75,42 @@ class _HomeScreenState extends State<HomeScreen> {
      super.dispose();
   }
 
-  Widget cardWidget(BuildContext context, int index){
-    dynamic js = jsonDecode(reqResponse);
-    if(js[index]["type"] == "UNPAID_INVOICE"){
-      return Container(
-        width: MediaQuery.of(context).size.width,
-        margin: EdgeInsets.symmetric(horizontal: 5.0),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topRight,
-            end: Alignment.bottomLeft,
-            colors: [
-              Colors.green[400],
-              Colors.green[700]
-            ]
+  @override
+  void didChangeDependencies() async{
+    super.didChangeDependencies();
+    await getCards().then((value){
+      setState(() {
+        items = value;
+        hasObtainedCards = true;
+      });
+      buildCardsList();
+    });
+  }
+
+  List<Widget> cards = [];
+
+  void buildCardsList(){
+    int itemsCount = (items.length > 3) ? 3 : items.length;
+    for(int i = 0; i < itemsCount; i++){
+      if(items[i]["type"] == "UNPAID_INVOICE"){
+        cards.add(unpaidInvoice(context, items, i));
+      }else if(items[i]["type"] == "ONGOING_STAY"){
+        cards.add(ongoingStay(context, items, i));
+      }else if(items[i]["type"] == "SWITCH_TO_PREMIUM"){
+        cards.add(switchToPremium(context, items, i));
+      }else if(items[i]["type"] == "NEXT_MILESTONES"){
+        cards.add(nextMilestones(context, items, i));
+      }else{
+        cards.add(Container(
+          width: MediaQuery.of(context).size.width,
+          margin: EdgeInsets.symmetric(horizontal: 5.0),
+          decoration: BoxDecoration(
+            color: Colors.grey[350],
+            borderRadius: BorderRadius.circular(10)
           ),
-          borderRadius: BorderRadius.circular(10)
-        ),
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: (MediaQuery.of(context).size.width*0.15)/2),
-          child: SizedBox(
-            width: MediaQuery.of(context).size.width,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Align(alignment: Alignment.centerLeft, child: Text(js[index]["title"], style: TextStyle(fontWeight: FontWeight.bold, fontSize: MediaQuery.of(context).size.width * 0.065, color: Colors.white))),
-                Align(alignment: Alignment.centerLeft, child: Text("Hai " + js[index]['data']['unpaid_count'].toString() + " " + js[index]["title"].toLowerCase() + " per un totale di 5 euro", style: TextStyle(color: Colors.white))),
-                Padding(
-                  padding: const EdgeInsets.only(top: 8.0),
-                  child: Container(
-                    width: MediaQuery.of(context).size.width, child: OutlinedButton(
-                    onPressed: (){}, child: Text("Vai alle fatture"),
-                    style: OutlinedButton.styleFrom(
-                        primary: Colors.white,
-                        onSurface: Colors.grey,
-                        side: BorderSide(width: 2, color: Colors.white),
-                      )
-                    )
-                  ),
-                )
-              ],
-            ),
-          ),
-        )
-      );
-    }else{
-      return Container(
-        width: MediaQuery.of(context).size.width,
-        margin: EdgeInsets.symmetric(horizontal: 5.0),
-        decoration: BoxDecoration(
-          color: Colors.grey[350],
-          borderRadius: BorderRadius.circular(10)
-        ),
-        child: Center(child: Text('', style: TextStyle(fontSize: 16.0),))
-      );     
+          child: Center(child: Text('', style: TextStyle(fontSize: 16.0),))
+        ));     
+      }
     }
   }
 
@@ -181,6 +166,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   options: CarouselOptions(
                     autoPlayInterval: const Duration(seconds: 10),
                     autoPlay: true,
+                    enableInfiniteScroll: hasObtainedCards ? ((items.length == 1) ? false : true ): false,
                     viewportFraction: 1.0,
                     height: MediaQuery.of(context).size.height * 0.2,
                     onPageChanged: (index, reason) {
