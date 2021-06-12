@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:parkplus/pages/invoices/invoices_list.dart';
 import 'package:parkplus/pages/login_register/login_register.dart';
 import 'package:parkplus/pages/profile/payments/payment_methods.dart';
 import 'package:parkplus/pages/profile/vehicles.dart';
@@ -135,13 +136,48 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       SettingsTile(
                         title: 'Fatture',
                         leading: Icon(Icons.money),
-                        onPressed: (BuildContext context) {},
+                        onPressed: (BuildContext context) {
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => InvoicesScreen()));
+                        },
                       ),
                     ],
                   ),
                   SettingsSection(
                     title: 'Sicurezza',
                     tiles: [
+                      SettingsTile(
+                        title: 'Logout da tutti i dispositivi',
+                        leading: Icon(Icons.lock),
+                        onPressed: (BuildContext context) async {
+                          return showDialog<bool>(
+                            context: context,
+                            builder: (context) {
+                              return AlertDialog(
+                                title: Text('Logout'),
+                                content: Text('Vuoi effettuare il logout da tutti i dispositivi?\n\nNon sarà necessario ri-effettuare il login su questo dispositivo.'),
+                                actions: <Widget>[
+                                  TextButton(
+                                    child: Text('ANNULLA', style: TextStyle(color: Colors.green[800])),
+                                    onPressed: () => Navigator.of(context).pop(false),
+                                  ),
+                                  TextButton(
+                                    child: Text('CONFERMA', style: TextStyle(color: Colors.red)),
+                                    onPressed: () async{
+                                      Navigator.of(context).pop(false);
+                                      EasyLoading.show(status: 'Logout in corso...');
+                                      bool loggedOut = await logout();
+                                      if(loggedOut){
+                                        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginRegister())); // TODO fix looking up a deactivated widget's ancestor is unsafe
+                                      }
+                                      EasyLoading.showSuccess('Logout effettuato!');
+                                    },
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        },
+                      ),
                       SettingsTile(
                         title: 'Logout',
                         leading: Icon(Icons.logout),
