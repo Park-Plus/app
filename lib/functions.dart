@@ -24,7 +24,8 @@ Future<bool> login(String mail, String password) async {
   if(r.statusCode == 200){
     dynamic js = jsonDecode(r.body);
     prefs.setBool('logged_in', true);
-    prefs.setString('access_token', js["access_token"]);
+    prefs.setString('access_token', js["tokens"]["access_token"]);
+    prefs.setString('refresh_token', js["tokens"]["refresh_token"]);
     return true;
   }
   else{
@@ -35,25 +36,15 @@ Future<bool> login(String mail, String password) async {
 Future<bool> logout() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   String token = prefs.getString("access_token");
-  var r = await http.post(
-    Uri.parse(baseUrl + "/auth/logout"),
-    headers: {
-      'Authorization': 'Bearer ' + token
-    }
-  );
-  if(r.statusCode == 200){
-    prefs.remove('logged_in');
-    prefs.remove('access_token');
-    return true;
-  }
-  else{
-    return false;
-  }
+  prefs.remove('logged_in');
+  prefs.remove('access_token');
+  return true;
 }
 
 Future<bool> handleLogin() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   String token = prefs.getString("access_token");
+  String refreshToken = prefs.getString("refresh_token");
   if(token == null) return false;
   var r = await http.get(
     Uri.parse(baseUrl + "/auth/me"),
@@ -62,15 +53,15 @@ Future<bool> handleLogin() async {
     }
   );
   if(r.statusCode == 401){
-    String newToken = await renewToken(token);
+    String newToken = await renewToken(refreshToken);
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    print(r.body);
     if(newToken != "-"){
       prefs.setString("access_token", newToken);
     }else{
       print("Sloggato");
       prefs.setBool("logged_in", false);
       prefs.remove("access_token");
+      prefs.remove("refresh_token");
       return false;
     }
   }
@@ -78,16 +69,16 @@ Future<bool> handleLogin() async {
   return true;
 }
 
-Future<String> renewToken(String oldToken) async{
+Future<String> renewToken(String refreshToken) async{
   var r = await http.post(
   Uri.parse(baseUrl + "/auth/refresh"),
     headers: {
-      'Authorization': 'Bearer ' + oldToken
+      'Authorization': 'Bearer ' + refreshToken
     }
   );
   if(r.statusCode == 200){
     print("Token rinnovato.");
-    return jsonDecode(r.body)['access_token'];
+    return jsonDecode(r.body)["tokens"]['access_token'];
   }else{
     return '-';
   }
@@ -266,4 +257,41 @@ Future<dynamic> deleteVehicle(String vehicleID) async{
     }
   );
   return jsonDecode(r.body);
+}
+
+/* 
+
+  INVOICES
+
+*/
+
+Future<dynamic> getInvoices() async{
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  String token = prefs.getString("access_token"); 
+  var r = await http.get(
+    Uri.parse(baseUrl + "/user/invoices/list"),
+    headers: {
+      'Authorization': 'Bearer ' + token
+    }
+  );
+  return jsonDecode(r.body);
+}
+
+Future<dynamic> payUnpaidInvoices() async{
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  String token = prefs.getString("access_token"); 
+  var r = await http.post(
+    Uri.parse(baseUrl + "/user/invoices/tryUnpaid"),
+    headers: {
+      'Authorization': 'Bearer ' + token
+    }
+  );
+  dynamic js = jsonDecode(r.body);
+  if(js["paid"] == 0){
+    return 0;
+  }else if(js["unpaids"] != js["paid"]) {
+    return -1;
+  }else{
+    return 1;
+  }
 }
