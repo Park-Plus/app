@@ -37,6 +37,7 @@ class _BookingsScreenState extends State<BookingsScreen> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Align(alignment: Alignment.centerLeft, child: Text("Prenotazioni", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30, color: Colors.black))),
+                            Align(alignment: Alignment.centerLeft, child: Text("Da qui puoi visualizzare tutte le tue prenotazioni passate, attive e crearne di nuove.", style: TextStyle(color: Colors.black))),
                           ]
                         ),
                       ),
@@ -44,6 +45,18 @@ class _BookingsScreenState extends State<BookingsScreen> {
                 ),
               ), alignment: Alignment.centerLeft)
             )
+          ),
+          Container(
+            width: MediaQuery.of(context).size.width * 0.9,
+            child: TextButton.icon(
+              icon: Icon(Icons.add),
+              label: Text("NUOVA"),
+              onPressed: () async {},
+              style: TextButton.styleFrom(
+                primary: Colors.white,
+                backgroundColor: Colors.green[800]
+              ),
+            ),
           ),
         ]
       )

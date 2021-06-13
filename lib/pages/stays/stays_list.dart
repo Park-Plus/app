@@ -55,6 +55,7 @@ class _StaysScreenState extends State<StaysScreen> {
     _getStays();
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Text("Aggiornato!"),
+      duration: Duration(seconds: 2),
     ));
     return Future.value();
   }
