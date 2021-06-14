@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -294,4 +295,66 @@ Future<dynamic> payUnpaidInvoices() async{
   }else{
     return 1;
   }
+}
+
+/*
+
+  BOOKINGS
+
+*/
+
+Future<dynamic> getAvailableBookingSlots(DateTime start, DateTime end) async{
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  String token = prefs.getString("access_token"); 
+
+  Map data = {
+    'start': (start.millisecondsSinceEpoch / 1000).round().toString(),
+    'end': (end.millisecondsSinceEpoch / 1000).round().toString()
+  };
+
+  var r = await http.post(
+    Uri.parse(baseUrl + "/user/bookings/available"),
+    headers: {
+      'Authorization': 'Bearer ' + token
+    },
+    body: data
+  );
+  dynamic js = jsonDecode(r.body);
+  return js;
+}
+
+
+Future<dynamic> bookPlace(DateTime start, DateTime end, String place) async{
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  String token = prefs.getString("access_token"); 
+
+  Map data = {
+    'start': (start.millisecondsSinceEpoch / 1000).round().toString(),
+    'end': (end.millisecondsSinceEpoch / 1000).round().toString(),
+    'place': place
+  };
+
+  var r = await http.post(
+    Uri.parse(baseUrl + "/user/bookings/book"),
+    headers: {
+      'Authorization': 'Bearer ' + token
+    },
+    body: data
+  );
+  dynamic js = jsonDecode(r.body);
+  return js;
+}
+
+Future<dynamic> getBookings() async{
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  String token = prefs.getString("access_token"); 
+
+  var r = await http.get(
+    Uri.parse(baseUrl + "/user/bookings"),
+    headers: {
+      'Authorization': 'Bearer ' + token
+    }
+  );
+  dynamic js = jsonDecode(r.body);
+  return js;
 }
