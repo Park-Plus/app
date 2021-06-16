@@ -25,13 +25,19 @@ class _NewBookingScreenState extends State<NewBookingScreen> {
     if(await handleLogin()){
       final now = new DateTime.now();
       if(startTime != null && endTime != null){
-        dynamic resp = await getAvailableBookingSlots(DateTime(now.year, now.month, now.day, startTime.hour, startTime.minute), DateTime(now.year, now.month, now.day, endTime.hour, endTime.minute));
-        if(this.mounted){
-          setState(() {
-            places = resp;
-            isLoading = false;
-            showList = true;
-          });
+        DateTime start = DateTime(now.year, now.month, now.day, startTime.hour, startTime.minute);
+        DateTime end = DateTime(now.year, now.month, now.day, endTime.hour, endTime.minute);
+        if(start.millisecondsSinceEpoch < end.millisecondsSinceEpoch){
+          dynamic resp = await getAvailableBookingSlots(start, end);
+          if(this.mounted){
+            setState(() {
+              places = resp;
+              isLoading = false;
+              showList = true;
+            });
+          }
+        }else{
+          _scaffoldKey.currentState.showSnackBar(new SnackBar(backgroundColor: Colors.red, content: new Text("L'ora di arrivo deve essere prima di quella di uscita!")));
         }
       }
     }else{
@@ -60,9 +66,12 @@ class _NewBookingScreenState extends State<NewBookingScreen> {
 
   var parser = EmojiParser();
 
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(),
       body: Container(
       child: Column(

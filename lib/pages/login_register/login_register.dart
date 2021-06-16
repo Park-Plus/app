@@ -56,6 +56,7 @@ class _LoginRegisterState extends State<LoginRegister> {
 
   @override
   Widget build(BuildContext context) {
+    dynamic statusBarHeight = MediaQuery.of(context).padding.top;
     return WillPopScope(
       onWillPop: _interceptBackKey,
       child: Scaffold(
@@ -63,6 +64,10 @@ class _LoginRegisterState extends State<LoginRegister> {
         body: SingleChildScrollView(
           child: Column(
             children: <Widget>[
+              Container(
+                height: statusBarHeight,
+                color: Colors.green[400]
+              ),
               Container(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
@@ -83,7 +88,7 @@ class _LoginRegisterState extends State<LoginRegister> {
                     ),
                   ],
                 ),
-                height: 300.0,
+                height: 300.0 - statusBarHeight,
                 width: double.infinity,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -91,9 +96,9 @@ class _LoginRegisterState extends State<LoginRegister> {
                   children: [
                     Padding(
                       child: Image(
-                        image: AssetImage('assets/images/logo.png'),
-                        width: 50,
-                        height: 50
+                        image: AssetImage('assets/images/logo_new.png'),
+                        width: 75,
+                        height: 75
                       ),
                       padding: EdgeInsets.only(
                         bottom: 20
@@ -290,6 +295,7 @@ class _LoginRegisterState extends State<LoginRegister> {
                               decoration: InputDecoration(
                                 border: InputBorder.none,
                                 icon: Icon(Icons.mail, color: mailErrata ? Colors.red[800] : Colors.green[800]),
+                                errorStyle: TextStyle(height: 0, color: Colors.transparent)
                               ),
                               validator: FormBuilderValidators.compose([
                                 FormBuilderValidators.email(context, errorText: ''),
