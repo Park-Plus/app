@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 
-Widget switchToPremium(context, js, index) {
+Widget unpaidInvoice(context, js, index) {
+  double unpaidTotal = 0.0;
+  js[index]['data']["invoice"]
+      .forEach((element) => unpaidTotal += element["price"]);
   return Container(
       width: MediaQuery.of(context).size.width,
       margin: EdgeInsets.symmetric(horizontal: 5.0),
@@ -8,7 +11,7 @@ Widget switchToPremium(context, js, index) {
           gradient: LinearGradient(
               begin: Alignment.topRight,
               end: Alignment.bottomLeft,
-              colors: [Colors.blue[400], Colors.blue[700]]),
+              colors: [Colors.orange[400], Colors.orange[700]]),
           borderRadius: BorderRadius.circular(10)),
       child: Padding(
         padding: EdgeInsets.symmetric(
@@ -31,10 +34,17 @@ Widget switchToPremium(context, js, index) {
                   child: RichText(
                       text: TextSpan(children: [
                     TextSpan(
-                        text: "Tariffa scontata, nessuna commissione.\n",
-                        style: TextStyle(
-                            color: Colors.white, fontWeight: FontWeight.bold)),
-                    TextSpan(text: "Passa ora al piano Premium!"),
+                        text: "Hai " +
+                            js[index]['data']['unpaid_count'].toString() +
+                            " " +
+                            js[index]["title"].toLowerCase() +
+                            " per un totale di " +
+                            unpaidTotal.toStringAsFixed(2) +
+                            "€.",
+                        style: TextStyle(color: Colors.white)),
+                    TextSpan(
+                        text: " Salda ora per poter usare Park+.",
+                        style: TextStyle(fontWeight: FontWeight.bold)),
                   ]))),
               Padding(
                 padding: const EdgeInsets.only(top: 8.0),
@@ -42,8 +52,8 @@ Widget switchToPremium(context, js, index) {
                     width: MediaQuery.of(context).size.width,
                     child: OutlinedButton.icon(
                         onPressed: () {},
-                        icon: Icon(Icons.star),
-                        label: Text("Fai l'upgrade"),
+                        icon: Icon(Icons.double_arrow),
+                        label: Text("Vai alle fatture"),
                         style: OutlinedButton.styleFrom(
                           primary: Colors.white,
                           onSurface: Colors.grey,
