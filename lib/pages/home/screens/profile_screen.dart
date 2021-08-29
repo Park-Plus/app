@@ -4,13 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:intl/intl.dart';
+import 'package:parkplus/functions.dart';
 import 'package:parkplus/pages/invoices/invoices_list.dart';
 import 'package:parkplus/pages/login_register/login_register.dart';
 import 'package:parkplus/pages/profile/payments/payment_methods.dart';
 import 'package:parkplus/pages/profile/vehicles.dart';
 import 'package:settings_ui/settings_ui.dart';
-import 'package:intl/intl.dart';
-import 'package:parkplus/functions.dart';
 
 class ProfileScreen extends StatefulWidget {
   @override

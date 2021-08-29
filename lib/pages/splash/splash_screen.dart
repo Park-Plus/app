@@ -1,9 +1,9 @@
 import 'dart:io';
-import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:parkplus/pages/home/home.dart';
+
 import 'package:flutter/material.dart';
-import 'package:parkplus/pages/login_register/login_register.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:parkplus/pages/home/home.dart';
+import 'package:parkplus/pages/login_register/login_register.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SplashScreen extends StatefulWidget {

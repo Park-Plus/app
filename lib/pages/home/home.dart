@@ -2,8 +2,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:parkplus/pages/home/screens/right_now_screen.dart';
-import 'screens/home_screen.dart';
+
 import 'screens/bookings_screen.dart';
+import 'screens/home_screen.dart';
 import 'screens/profile_screen.dart';
 
 class Home extends StatefulWidget {
@@ -13,13 +14,6 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   int _currentPage = 0;
-
-  /*
-   0: Home
-   1: Prenotazioni
-   2: Veicoli
-   3: Profilo
-  */
 
   Size size;
   double statusBarHeight;

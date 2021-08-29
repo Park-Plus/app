@@ -1,10 +1,9 @@
-import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:parkplus/pages/home/home.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:parkplus/functions.dart';
+import 'package:parkplus/pages/home/home.dart';
 
 TValue case2<TOptionType, TValue>(
   TOptionType selectedOption,
@@ -646,7 +645,7 @@ class _LoginRegisterState extends State<LoginRegister> {
                                   style: TextStyle(color: Colors.green[800]),
                                   recognizer: TapGestureRecognizer()
                                     ..onTap = () {
-                                      print(".");
+                                      print("ToS");
                                     },
                                 ),
                               ],

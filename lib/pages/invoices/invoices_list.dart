@@ -5,8 +5,6 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:parkplus/functions.dart';
-import 'package:intl/intl.dart';
-import 'package:parkplus/pages/login_register/login_register.dart';
 
 class InvoicesScreen extends StatefulWidget {
   @override

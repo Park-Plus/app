@@ -1,7 +1,8 @@
-import 'package:flutter/material.dart';
 import 'dart:math';
-import 'package:parkplus/functions.dart';
+
+import 'package:flutter/material.dart';
 import 'package:flutter_emoji/flutter_emoji.dart';
+import 'package:parkplus/functions.dart';
 
 T getRandomElement<T>(List<T> list) {
   final random = new Random();
