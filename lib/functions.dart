@@ -3,13 +3,8 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
-final String baseUrl = "http://10.0.2.2:8252";
-final String utilsBaseUrl = 'http://10.0.2.2:8253';
-
-/*
-  Local development: http://10.0.2.2:8252
-  Production: https://api.parkplus.cc
-*/
+final String baseUrl = "..."; // Insert here your backend URL
+final String utilsBaseUrl = '...'; // Insert here your utils URL
 
 Future<bool> login(String mail, String password) async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
